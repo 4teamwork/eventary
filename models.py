@@ -8,6 +8,9 @@ class Calendar(models.Model):
     # are related enabling event discrimination by calendar
     title = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.title
+
 
 class Host(DjangoUser):
     # The host contains all the information about the host.
@@ -18,6 +21,9 @@ class Host(DjangoUser):
     phone = models.CharField(max_length=20)
     homepage = models.URLField()
 
+    def __str__(self):
+        return "{0} {1} [{2}]".format(self.first_name, self.last_name, self.organization)
+
 
 class Event(models.Model):
     # The event model contains all the information related
@@ -25,8 +31,8 @@ class Event(models.Model):
     # some flexibility its split up into a custom model and
     # linked to the event through a one to many relation.
     calendar = models.ForeignKey(Calendar)
-    image = models.ImageField()
-    document = models.FileField()
+    image = models.ImageField(upload_to='cal_images/%Y/%m/%d/')
+    document = models.FileField(upload_to='cal_documents/%Y/%m/%d')
     host = models.ForeignKey(Host)
     title = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
@@ -35,6 +41,9 @@ class Event(models.Model):
     description = models.TextField('description')
     comment = models.CharField('comment', max_length=255)
     prize = models.DecimalField('prize', max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return "{0} @ {1} by {2}".format(self.title, self.location, self.host)
 
 
 class EventTimeDate(models.Model):
