@@ -25,12 +25,15 @@ class Event(models.Model):
     # some flexibility its split up into a custom model and
     # linked to the event through a one to many relation.
     calendar = models.ForeignKey(Calendar)
+    image = models.ImageField()
+    document = models.FileField()
     host = models.ForeignKey(Host)
     title = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     homepage = models.URLField()
     published = models.BooleanField('publication status')
     description = models.TextField('description')
+    comment = models.CharField('comment', max_length=255)
     prize = models.DecimalField('prize', max_digits=6, decimal_places=2)
 
 
