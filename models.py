@@ -22,7 +22,11 @@ class Host(DjangoUser):
     homepage = models.URLField()
 
     def __str__(self):
-        return "{0} {1} [{2}]".format(self.first_name, self.last_name, self.organization)
+        return "{0} {1} [{2}]".format(
+            self.first_name,
+            self.last_name,
+            self.organization
+        )
 
 
 class Event(models.Model):
@@ -31,8 +35,8 @@ class Event(models.Model):
     # some flexibility its split up into a custom model and
     # linked to the event through a one to many relation.
     calendar = models.ForeignKey(Calendar)
-    image = models.ImageField(upload_to='cal_images/%Y/%m/%d/')
-    document = models.FileField(upload_to='cal_documents/%Y/%m/%d')
+    image = models.ImageField(upload_to='cal/images/%Y/%m/%d')
+    document = models.FileField(upload_to='cal/documents/%Y/%m/%d')
     host = models.ForeignKey(Host)
     title = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
