@@ -1,13 +1,15 @@
 {% extends 'cal/base.html' %}
 
 {% load static %}
-{% load bootstrap3 %}
 
 {% block 'head' %}
-<script type="text/javascript" src="/static/js/jquery.js" />
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{{ eventtimedateform.media }}
+<link rel="stylesheet" 
+    href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
+<link rel="stylesheet" 
+    href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
+{{ timedateform.media }}
 {% endblock %}
 
 {% block 'content' %}

@@ -5,7 +5,7 @@ import math
 from django.forms import formset_factory
 from django.shortcuts import get_object_or_404, render
 
-from .forms import EventForm, EventTimeDateForm
+from .forms import EventForm, TimeDateForm
 from .models import Calendar, Event
 
 
@@ -93,20 +93,20 @@ def event_add(request, calendar_id):
 
     if request.method == 'POST':
         eventform = EventForm(request.POST, request.FILES)
-        eventtimedateform = EventTimeDateForm(request.POST)
+        timedateform = TimeDateForm(request.POST)
 
-        if eventform.is_valid() and eventtimedateform.is_valid():
+        if eventform.is_valid() and timedateform.is_valid():
             pass
             # todo: check if the forms in the formset are valid
             # todo: generate the events and their corresponding eventdatetime
     else:
         eventform = EventForm()
-        eventtimedateform = EventTimeDateForm()
+        timedateform = TimeDateForm()
 
     return render(request, 'cal/event_add.html', {
         'calendar': calendar,
         'eventform': eventform,
-        'eventtimedateform': eventtimedateform
+        'timedateform': timedateform
     })
 
 

@@ -1,7 +1,8 @@
-from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 
-from .models import Event, EventTimeDate
+from bootstrap3_datetime.widgets import DateTimePicker
+
+from .models import Event
 
 
 class EventForm(forms.ModelForm):
@@ -13,6 +14,10 @@ class EventForm(forms.ModelForm):
         ]
 
 
-class EventTimeDateForm(forms.Form):
-    start = forms.DateTimeField(widget=DateTimePicker())
-    end = forms.DateTimeField(widget=DateTimePicker())
+class TimeDateForm(forms.Form):
+    start_date_time = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD HH:mm"
+    }))
+    end_date_time = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD HH:mm",
+    }))
