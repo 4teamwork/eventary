@@ -60,3 +60,10 @@ class EventTimeDate(models.Model):
     end_time = models.TimeField('end time')
     comment = models.CharField('comment', max_length=255)
     prize = models.DecimalField('prize', max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return "{0} - {1} > {2}".format(
+            self.event.title,
+            self.start_date,
+            self.end_date
+        )
