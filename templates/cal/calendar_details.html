@@ -10,10 +10,10 @@
   {% for day, events in week %}
     <td>
     {% if day %}
-        <span>{{ day }}</span>
-        {% for event in events %}
-            <div>{{ event|truncatechars:9 }}</div>
-        {% endfor %}
+      <span>{{ day }}</span>
+      {% for event in events %}
+        <div><a href="{% url 'cal:event_details' calendar.pk event.pk %}" title="{{ event }}">{{ event|truncatechars:9 }}</a></div>
+      {% endfor %}
     {% endif %}
     </td>
   {% endfor %}

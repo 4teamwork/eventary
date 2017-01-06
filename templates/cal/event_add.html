@@ -1,0 +1,16 @@
+{% extends 'cal/base.html' %}
+
+{% load static %}
+{% load bootstrap3 %}
+
+{% block 'head' %}
+<script type="text/javascript" src="/static/js/jquery.js" />
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{{ eventtimedateform.media }}
+{% endblock %}
+
+{% block 'content' %}
+<h2>Add a new event</h2>
+    {% include 'cal/forms/add_event.html' %}
+{% endblock %}

@@ -3,5 +3,6 @@
 {% load static %}
 
 {% block 'content' %}
+<h2>{{ event.title }}</h2>
 <img src="{% static event.image.url %}" title="todo" alt="todo" />
 {% endblock %}

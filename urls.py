@@ -13,8 +13,13 @@ urlpatterns = [
         name='calendar_details'
     ),
     url(
+        r'^cal_(?P<calendar_id>[0-9]*)/add/$',
+        views.event_add,
+        name='event_add'
+    ),
+    url(
         r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*)/$',
-        views.details,
+        views.event_details,
         name='event_details'
     ),
 ]

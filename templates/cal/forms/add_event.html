@@ -1,0 +1,6 @@
+<form action="{% url 'cal:event_add' calendar.pk %}" enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {{ eventform.as_ul }}
+    {{ eventtimedateform.as_ul }}
+    <input type="submit" value="OK">
+</form>

@@ -1,9 +1,12 @@
-from django.shortcuts import get_object_or_404, render
-from .models import Calendar, Event
-
 import calendar as pycal
 import datetime as pydt
 import math
+
+from django.forms import formset_factory
+from django.shortcuts import get_object_or_404, render
+
+from .forms import EventForm, EventTimeDateForm
+from .models import Calendar, Event
 
 
 def index(request):
@@ -85,6 +88,28 @@ def calendar_details(request, calendar_id):
     })
 
 
+def event_add(request, calendar_id):
+    calendar = get_object_or_404(Calendar, pk=calendar_id)
+
+    if request.method == 'POST':
+        eventform = EventForm(request.POST, request.FILES)
+        eventtimedateform = EventTimeDateForm(request.POST)
+
+        if eventform.is_valid() and eventtimedateform.is_valid():
+            pass
+            # todo: check if the forms in the formset are valid
+            # todo: generate the events and their corresponding eventdatetime
+    else:
+        eventform = EventForm()
+        eventtimedateform = EventTimeDateForm()
+
+    return render(request, 'cal/event_add.html', {
+        'calendar': calendar,
+        'eventform': eventform,
+        'eventtimedateform': eventtimedateform
+    })
+
+
 def event_list(request, calendar_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
     return render(request, 'cal/list.html', {
@@ -92,8 +117,8 @@ def event_list(request, calendar_id):
     })
 
 
-def details(request, calendar_id, event_id):
+def event_details(request, calendar_id, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    return render(request, 'cal/details.html', {
+    return render(request, 'cal/event_details.html', {
         'event': event
     })
