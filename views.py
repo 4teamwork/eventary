@@ -6,8 +6,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .forms import EventForm, TimeDateForm, event_grouping_form_factory
-from .models import Calendar, Event, EventTimeDate
+from .forms import EventForm, TimeDateForm
+from .forms import event_grouping_form_factory, event_grouping_form_validates
+from .models import Calendar, Event, EventTimeDate, Group
 
 
 def index(request):
@@ -102,13 +103,19 @@ def event_add(request, calendar_id):
         timedateform = TimeDateForm(request.POST)
         groupingform = event_grouping_form_factory(calendar_id)
 
-        if eventform.is_valid() and timedateform.is_valid():
+        if (
+            eventform.is_valid() and
+            timedateform.is_valid() and
+            event_grouping_form_validates(calendar_id, groupingform)
+        ):
+
             # prepare the event and store it
             event = eventform.save(commit=False)
             event.calendar = calendar
             event.published = False
             event.save()
 
+            # create the time date objects for te event
             timedatedata = timedateform.clean()
             timedate = EventTimeDate()
             timedate.event = event
@@ -117,6 +124,9 @@ def event_add(request, calendar_id):
             timedate.end_date = timedatedata['end_date_time'].date()
             timedate.end_time = timedatedata['end_date_time'].time()
             timedate.save()
+
+            # associate the event to the groups given by the groupingform
+            # todo
 
             return HttpResponseRedirect(reverse(
                 'cal:event_details',

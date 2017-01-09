@@ -66,3 +66,8 @@ def event_grouping_form_factory(calendar_id):
     form.fields.update(fields)
 
     return form
+
+
+def event_grouping_form_validates(calendar_id, form):
+    # todo
+    return True
