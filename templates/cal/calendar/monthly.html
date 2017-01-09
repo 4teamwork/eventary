@@ -1,0 +1,8 @@
+{% extends 'cal/base.html' %}
+
+{% block 'content' %}
+<h2>{{ now|date:"F Y" }} - {{ calendar.title }}</h2>
+
+{% include 'cal/components/month_as_table.html' %}
+
+{% endblock %}

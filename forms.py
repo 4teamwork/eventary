@@ -15,9 +15,9 @@ class EventForm(forms.ModelForm):
 
 
 class TimeDateForm(forms.Form):
-    start_date_time = forms.DateField(widget=DateTimePicker(options={
+    start_date_time = forms.DateTimeField(widget=DateTimePicker(options={
         "format": "YYYY-MM-DD HH:mm"
     }))
-    end_date_time = forms.DateField(widget=DateTimePicker(options={
+    end_date_time = forms.DateTimeField(widget=DateTimePicker(options={
         "format": "YYYY-MM-DD HH:mm",
     }))

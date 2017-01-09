@@ -2,11 +2,12 @@ import calendar as pycal
 import datetime as pydt
 import math
 
-from django.forms import formset_factory
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from .forms import EventForm, TimeDateForm
-from .models import Calendar, Event
+from .models import Calendar, Event, EventTimeDate
 
 
 def index(request):
@@ -15,21 +16,27 @@ def index(request):
 
 def calendar_list(request):
     calendars = Calendar.objects.all()
-    return render(request, 'cal/calendar_list.html', {
+    return render(request, 'cal/calendar/list.html', {
         'calendars': calendars
     })
 
 
 def calendar_details(request, calendar_id):
+    """Displays an overview of the selected calendar.
+
+    The monthly overview is completed with a search field."""
     # return a 404 object if the calendar does not exist
     calendar = get_object_or_404(Calendar, pk=calendar_id)
 
     # the default view shows the actual month
-    now = pydt.datetime.now()
+    now = pydt.date.today()
 
-    # but another month can be set through get variables
+    # but another month can be set through get variables - for "pagination"
     year = int(request.GET.get('year', default=now.year))
     month = int(request.GET.get('month', default=now.month))
+
+    # rewrite 'now' with the given year and month
+    now = pydt.date(year, month, 1)
 
     # to filter the right events we need the last day of the previous month
     # and the first day of the upcoming month
@@ -48,9 +55,7 @@ def calendar_details(request, calendar_id):
     events = Event.objects.filter(
         calendar=calendar_id
     ).exclude(
-        eventtimedate__start_date__gte=first_next
-    ).exclude(
-        eventtimedate__end_date__lte=last_previous
+        published=False
     ).distinct()
 
     # get the calendar for the given year and month
@@ -76,14 +81,15 @@ def calendar_details(request, calendar_id):
                     eventtimedate__start_date__gte=upper
                 ).exclude(
                     eventtimedate__end_date__lte=lower
-                ))))
+                ).distinct())))
         table.append(_week)
 
-    return render(request, 'cal/calendar_details.html', {
+    return render(request, 'cal/calendar/details.html', {
         'calendar': calendar,
         'events': events,
         'overview': table,
         'previous': last_previous,
+        'now': now,
         'next': first_next
     })
 
@@ -96,29 +102,46 @@ def event_add(request, calendar_id):
         timedateform = TimeDateForm(request.POST)
 
         if eventform.is_valid() and timedateform.is_valid():
-            pass
-            # todo: check if the forms in the formset are valid
-            # todo: generate the events and their corresponding eventdatetime
+            # prepare the event and store it
+            event = eventform.save(commit=False)
+            event.calendar = calendar
+            event.published = False
+            event.save()
+
+            timedatedata = timedateform.clean()
+            timedate = EventTimeDate()
+            timedate.event = event
+            timedate.start_date = timedatedata['start_date_time'].date()
+            timedate.start_time = timedatedata['start_date_time'].time()
+            timedate.end_date = timedatedata['end_date_time'].date()
+            timedate.end_time = timedatedata['end_date_time'].time()
+            timedate.save()
+
+            return HttpResponseRedirect(reverse(
+                'cal:event_details',
+                args=[calendar.pk, event.pk]
+            ))
+
     else:
         eventform = EventForm()
         timedateform = TimeDateForm()
 
-    return render(request, 'cal/event_add.html', {
+    return render(request, 'cal/event/add.html', {
         'calendar': calendar,
         'eventform': eventform,
         'timedateform': timedateform
     })
 
 
-def event_list(request, calendar_id):
+def event_search(request, calendar_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
-    return render(request, 'cal/list.html', {
+    return render(request, 'cal/event/search.html', {
         'calendar': calendar
     })
 
 
 def event_details(request, calendar_id, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    return render(request, 'cal/event_details.html', {
+    return render(request, 'cal/event/details.html', {
         'event': event
     })
