@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .forms import EventForm, TimeDateForm
+from .forms import EventForm, TimeDateForm, event_grouping_form_factory
 from .models import Calendar, Event, EventTimeDate
 
 
@@ -100,6 +100,7 @@ def event_add(request, calendar_id):
     if request.method == 'POST':
         eventform = EventForm(request.POST, request.FILES)
         timedateform = TimeDateForm(request.POST)
+        groupingform = event_grouping_form_factory(calendar_id)
 
         if eventform.is_valid() and timedateform.is_valid():
             # prepare the event and store it
@@ -125,11 +126,13 @@ def event_add(request, calendar_id):
     else:
         eventform = EventForm()
         timedateform = TimeDateForm()
+        groupingform = event_grouping_form_factory(calendar_id)
 
     return render(request, 'cal/event/add.html', {
         'calendar': calendar,
         'eventform': eventform,
-        'timedateform': timedateform
+        'timedateform': timedateform,
+        'groupingform': groupingform
     })
 
 

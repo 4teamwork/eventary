@@ -90,3 +90,23 @@ class EventTimeDate(models.Model):
             self.start_date,
             self.end_date
         )
+
+
+class Grouping(models.Model):
+    title = models.CharField(max_length=255)
+    calendars = models.ManyToManyField(Calendar)
+
+    def __str__(self):
+        return "{0} -- {1}".format(
+            self.title,
+            ", ".join([c.title for c in self.calendars.all()])
+        )
+
+
+class Group(models.Model):
+    title = models.CharField(max_length=255)
+    grouping = models.ForeignKey(Grouping)
+    events = models.ManyToManyField('Event', null=True, blank=True)
+
+    def __str__(self):
+        return "{0} -- {1}".format(self.title, self.grouping.title)
