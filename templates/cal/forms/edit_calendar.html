@@ -1,0 +1,5 @@
+<form action="{% url 'cal:calendar_edit' calendar.pk %}" method="post">
+    {% csrf_token %}
+    {{ calendarform.as_ul }}
+    <input type="submit" value="OK">
+</form>

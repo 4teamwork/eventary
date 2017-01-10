@@ -18,6 +18,11 @@ urlpatterns = [
         name='calendar_edit'
     ),
     url(
+        r'^cal_(?P<calendar_id>[0-9]*)/proposals/$',
+        views.calendar_proposals,
+        name='calendar_proposals'
+    ),
+    url(
         r'^cal_(?P<calendar_id>[0-9]*)/add/$',
         views.event_add,
         name='event_add'
@@ -26,5 +31,10 @@ urlpatterns = [
         r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*)/$',
         views.event_details,
         name='event_details'
+    ),
+    url(
+        r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*)/edit/$',
+        views.event_edit,
+        name='event_edit'
     ),
 ]

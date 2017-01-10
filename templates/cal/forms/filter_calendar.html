@@ -1,0 +1,5 @@
+<form action="{% url 'cal:calendar_details' calendar.pk %}" method="post">
+    {% csrf_token %}
+    {{ filterform.as_ul }}
+    <input type="submit" value="filter">
+</form>

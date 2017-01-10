@@ -1,0 +1,13 @@
+{% extends 'cal/base.html' %}
+
+{% block 'content' %}
+<h2>Proposed events for {{ calendar.title }}</h2>
+
+<ul>
+{% for event in events %}
+    <li><a href="" title="{{ event.title }}">{{ event }}</a></li>
+{% endfor %}
+</ul>
+
+
+{% endblock %}

@@ -5,6 +5,42 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from .models import Calendar, Grouping, Group, Event
 
 
+class FilterForm(forms.Form):
+
+    def init_fields(self, calendar_id):
+
+        # get the groups
+        _groups = Group.objects.filter(
+            grouping__calendars=calendar_id
+        ).order_by('grouping').distinct()
+
+        # group the groups by groupings
+        _groupings = {}
+        for group in _groups:
+            # if the group was not added before, do it now
+            if group.grouping not in _groupings:
+                _groupings[group.grouping] = []
+            _groupings[group.grouping].append(group)
+
+        # generate choices using the sorted groupings
+        _choices = {
+            grouping: [
+                (group.pk, group.title) for group in _groupings[grouping]
+            ] for grouping in _groupings
+        }
+
+        # Now that we have the choices, generate MultipleChoiceFields with them
+        _fields = {
+            grouping.title: forms.MultipleChoiceField(
+                required=False,
+                widget=forms.CheckboxSelectMultiple,
+                choices=_choices[grouping]
+            ) for grouping in _groupings
+        }
+
+        self.fields.update(_fields)
+
+
 class CalendarForm(forms.ModelForm):
 
     groupings = forms.MultipleChoiceField(
