@@ -6,8 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .forms import EventForm, TimeDateForm
-from .forms import event_grouping_form_factory, event_grouping_form_validates
+from .forms import CalendarForm, EventForm, TimeDateForm, EventGroupingForm
 from .models import Calendar, Event, EventTimeDate, Group
 
 
@@ -95,18 +94,33 @@ def calendar_details(request, calendar_id):
     })
 
 
+def calendar_edit(request, calendar_id):
+    calendar = get_object_or_404(Calendar, pk=calendar_id)
+    if request.method == 'POST':
+        form = CalendarForm(request.POST)
+    else:
+        form = CalendarForm(instance=calendar)
+        form.init_fields()
+
+    return render(request, 'cal/calendar/edit.html', {
+        'calendar': calendar,
+        'form': form
+    })
+
+
 def event_add(request, calendar_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
 
     if request.method == 'POST':
         eventform = EventForm(request.POST, request.FILES)
         timedateform = TimeDateForm(request.POST)
-        groupingform = event_grouping_form_factory(calendar_id)
+        groupingform = EventGroupingForm(request.POST)
+        groupingform.init_fields(calendar_id)
 
         if (
             eventform.is_valid() and
             timedateform.is_valid() and
-            event_grouping_form_validates(calendar_id, groupingform)
+            groupingform.is_valid()
         ):
 
             # prepare the event and store it
@@ -126,7 +140,17 @@ def event_add(request, calendar_id):
             timedate.save()
 
             # associate the event to the groups given by the groupingform
-            # todo
+            groupingdata = groupingform.clean()
+            for grouping in groupingdata:
+                for group_pk in groupingdata[grouping]:
+                    group = get_object_or_404(
+                        Group,
+                        pk=int(group_pk),
+                        grouping__title=grouping
+                    )
+
+                    group.events.add(event)
+                    group.save()
 
             return HttpResponseRedirect(reverse(
                 'cal:event_details',
@@ -136,7 +160,8 @@ def event_add(request, calendar_id):
     else:
         eventform = EventForm()
         timedateform = TimeDateForm()
-        groupingform = event_grouping_form_factory(calendar_id)
+        groupingform = EventGroupingForm()
+        groupingform.init_fields(calendar_id)
 
     return render(request, 'cal/event/add.html', {
         'calendar': calendar,
