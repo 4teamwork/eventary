@@ -12,12 +12,12 @@ from .models import Calendar, Event, EventTimeDate, Group, Grouping
 
 
 def index(request):
-    return render(request, 'cal/index.html', {})
+    return render(request, 'eventary/index.html', {})
 
 
 def calendar_list(request):
     calendars = Calendar.objects.all()
-    return render(request, 'cal/calendar/list.html', {
+    return render(request, 'eventary/calendar/list.html', {
         'calendars': calendars
     })
 
@@ -106,7 +106,7 @@ def calendar_details(request, calendar_id):
                 ).distinct())))
         table.append(_week)
 
-    return render(request, 'cal/calendar/details.html', {
+    return render(request, 'eventary/calendar/details.html', {
         'calendar': calendar,
         'events': events,
         'overview': table,
@@ -135,7 +135,7 @@ def calendar_edit(request, calendar_id):
         form = CalendarForm(instance=calendar)
         form.init_fields()
 
-    return render(request, 'cal/calendar/edit.html', {
+    return render(request, 'eventary/calendar/edit.html', {
         'calendar': calendar,
         'calendarform': form
     })
@@ -150,7 +150,7 @@ def calendar_proposals(request, calendar_id):
         published=False
     )
 
-    return render(request, 'cal/calendar/proposals.html', {
+    return render(request, 'eventary/calendar/proposals.html', {
         'calendar': calendar,
         'events': events
     })
@@ -211,7 +211,7 @@ def event_add(request, calendar_id):
         groupingform = EventGroupingForm()
         groupingform.init_fields(calendar_id)
 
-    return render(request, 'cal/event/add.html', {
+    return render(request, 'eventary/event/add.html', {
         'calendar': calendar,
         'eventform': eventform,
         'timedateform': timedateform,
@@ -222,7 +222,7 @@ def event_add(request, calendar_id):
 def event_edit(request, calendar_id, event_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
     event = get_object_or_404(Event, pk=event_id, calendar=calendar_id)
-    return render(request, 'cal/event/edit.html', {
+    return render(request, 'eventary/event/edit.html', {
         'calendar': calendar,
         'event': event
     })
@@ -230,13 +230,13 @@ def event_edit(request, calendar_id, event_id):
 
 def event_search(request, calendar_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
-    return render(request, 'cal/event/search.html', {
+    return render(request, 'eventary/event/search.html', {
         'calendar': calendar
     })
 
 
 def event_details(request, calendar_id, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    return render(request, 'cal/event/details.html', {
+    return render(request, 'eventary/event/details.html', {
         'event': event
     })

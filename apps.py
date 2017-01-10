@@ -1,8 +1,8 @@
 from django.apps import AppConfig
 
 
-class CalConfig(AppConfig):
-    name = 'cal'
+class EventaryConfig(AppConfig):
+    name = 'eventary'
 
     def ready(self):
-        from cal import signals  # noqa
+        from eventary import signals  # noqa
