@@ -6,6 +6,7 @@ app_name = 'eventary'
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^add/$', views.calendar_add, name='calendar_add'),
     url(r'^list/$', views.calendar_list, name='calendar_list'),
     url(
         r'^cal_(?P<calendar_id>[0-9]*)/$',

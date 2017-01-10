@@ -53,11 +53,25 @@ class CalendarForm(forms.ModelForm):
     )
 
     def init_fields(self):
-        self.fields['groupings'].initial = [
-            grouping.pk for grouping in Grouping.objects.filter(
-                calendars=self.instance.pk
-            )
-        ]
+        if self.instance.pk is not None:
+            self.fields['groupings'].initial = [
+                grouping.pk for grouping in Grouping.objects.filter(
+                    calendars=self.instance.pk
+                )
+            ]
+
+    def save(self, *args, **kwargs):
+        super(CalendarForm, self).save(*args, **kwargs)
+
+        data = self.clean()
+        groupings = data['groupings']
+        for grouping in Grouping.objects.filter(pk__in=groupings):
+            grouping.calendars.add(self.instance)
+
+        for grouping in Grouping.objects.exclude(pk__in=groupings):
+            grouping.calendars.remove(self.instance)
+
+        return self.instance
 
     class Meta:
         model = Calendar

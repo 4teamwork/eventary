@@ -1,12 +1,15 @@
 from django.contrib.auth.models import User as DjangoUser
 from django.db import models
 
+from autoslug import AutoSlugField
+
 
 class Calendar(models.Model):
     # To allow several calendars in the same application,
     # a calendar model is generated, to which the events
     # are related enabling event discrimination by calendar
     title = models.CharField(max_length=255)
+    slug = AutoSlugField(populate_from='title')
 
     def __str__(self):
         return self.title
@@ -94,7 +97,7 @@ class EventTimeDate(models.Model):
 
 class Grouping(models.Model):
     title = models.CharField(max_length=255)
-    calendars = models.ManyToManyField('Calendar')
+    calendars = models.ManyToManyField('Calendar', blank=True, null=True)
 
     def __str__(self):
         return "{0} -- {1}".format(

@@ -8,11 +8,31 @@ from django.shortcuts import get_object_or_404, render
 
 from .forms import CalendarForm, EventForm, TimeDateForm, EventGroupingForm
 from .forms import FilterForm
-from .models import Calendar, Event, EventTimeDate, Group, Grouping
+from .models import Calendar, Event, EventTimeDate, Group
 
 
 def index(request):
     return render(request, 'eventary/index.html', {})
+
+
+def calendar_add(request):
+    if request.method == 'POST':
+        form = CalendarForm(request.POST)
+        form.init_fields()
+
+        if form.is_valid():
+            calendar = form.save()
+            return HttpResponseRedirect(reverse(
+                'eventary:calendar_details',
+                args=[calendar.pk]
+            ))
+
+    else:
+        form = CalendarForm()
+        form.init_fields()
+    return render(request, 'eventary/calendar/add.html', {
+        'calendarform': form
+    })
 
 
 def calendar_list(request):
@@ -124,13 +144,6 @@ def calendar_edit(request, calendar_id):
         form.init_fields()
         if form.is_valid():
             form.save()
-            data = form.clean()
-            groupings = data['groupings']
-            for grouping in Grouping.objects.filter(pk__in=groupings):
-                grouping.calendars.add(calendar)
-
-            for grouping in Grouping.objects.exclude(pk__in=groupings):
-                grouping.calendars.remove(calendar)
     else:
         form = CalendarForm(instance=calendar)
         form.init_fields()
@@ -201,7 +214,7 @@ def event_add(request, calendar_id):
                     group.save()
 
             return HttpResponseRedirect(reverse(
-                'cal:event_details',
+                'eventary:event_details',
                 args=[calendar.pk, event.pk]
             ))
 

@@ -5,8 +5,6 @@
 
 <h3>{{ now|date:"F Y" }}</h3>
 
-{% include 'eventary/forms/filter_calendar.html' %}
-
 {% include 'eventary/components/month_as_table.html' %}
 
 <div>
@@ -14,7 +12,11 @@
     <a href="?year={{ next.year }}&month={{ next.month }}">Next</a>
 </div>
 
-<a href="{% url 'eventary:event_add' calendar.pk %}" title="Veranstaltung melden">Veranstaltung melden</a>
+<h3>Apply a filter</h3>
+{% include 'eventary/forms/filter_calendar.html' %}
+
+<h3>Add events</h3>
+<a href="{% url 'eventary:event_add' calendar.pk %}" title="Add an event">Add an event</a>
 
 
 
