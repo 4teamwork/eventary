@@ -94,7 +94,7 @@ class EventTimeDate(models.Model):
 
 class Grouping(models.Model):
     title = models.CharField(max_length=255)
-    calendars = models.ManyToManyField(Calendar)
+    calendars = models.ManyToManyField('Calendar')
 
     def __str__(self):
         return "{0} -- {1}".format(

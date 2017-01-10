@@ -1,4 +1,4 @@
-<form action="{% url 'cal:calendar_edit' calendar.pk %}" method="post">
+<form action="{% url 'eventary:calendar_edit' calendar.pk %}" method="post">
     {% csrf_token %}
     {{ calendarform.as_table }}
     <input type="submit" value="OK">

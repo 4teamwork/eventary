@@ -1,4 +1,4 @@
-{% extends 'cal/base.html' %}
+{% extends 'eventary/base.html' %}
 
 {% block 'content' %}
 <h2>Veranstaltungskalender</h2>
@@ -6,7 +6,7 @@
 {% if calendars|length %}
 <ul>
     {% for calendar in calendars %}
-    <li><a href="{% url 'cal:calendar_details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }}</a></li>
+    <li><a href="{% url 'eventary:calendar_details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }}</a></li>
     {% endfor %}
 </ul>
 {% else %}

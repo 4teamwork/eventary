@@ -1,4 +1,4 @@
-<form action="{% url 'cal:event_add' calendar.pk %}" enctype="multipart/form-data" method="post">
+<form action="{% url 'eventary:event_add' calendar.pk %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
     {{ eventform.as_table }}
     {{ timedateform.as_table }}
