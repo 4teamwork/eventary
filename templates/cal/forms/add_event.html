@@ -1,10 +1,10 @@
 <form action="{% url 'cal:event_add' calendar.pk %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    {{ eventform.as_ul }}
-    {{ timedateform.as_ul }}
+    {{ eventform.as_table }}
+    {{ timedateform.as_table }}
     {% for hidden in timedateform.hidden_fields %}
         {{ hidden }}
     {% endfor %}
-    {{ groupingform.as_ul }}
+    {{ groupingform.as_table }}
     <input type="submit" value="OK">
 </form>
