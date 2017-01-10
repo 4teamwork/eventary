@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from . import views
 
-app_name = 'cal'
+app_name = 'eventary'
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
