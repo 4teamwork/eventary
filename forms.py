@@ -101,6 +101,13 @@ class EventForm(forms.ModelForm):
         ]
 
 
+class EventEditorialForm(forms.ModelForm):
+
+    class Meta:
+        model = Event
+        fields = ['published']
+
+
 class TimeDateForm(forms.Form):
     start_date_time = forms.DateTimeField(widget=DateTimePicker(options={
         "format": "YYYY-MM-DD HH:mm"

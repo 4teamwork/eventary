@@ -1,0 +1,7 @@
+<form action="{% url 'eventary:event_edit' calendar.pk event.pk %}" method="post">
+    {% csrf_token %}
+    <table>
+    {{ eventform.as_table }}
+    </table>
+    <input type="submit" value="OK">
+</form>

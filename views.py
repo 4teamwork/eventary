@@ -7,8 +7,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .forms import CalendarForm, EventForm, TimeDateForm, EventGroupingForm
-from .forms import FilterForm
+from .forms import CalendarForm, EventForm, EventEditorialForm, TimeDateForm
+from .forms import EventGroupingForm, FilterForm
 from .models import Calendar, Event, EventTimeDate, Group, Host
 
 
@@ -273,9 +273,18 @@ def event_add(request, calendar_id):
 def event_edit(request, calendar_id, event_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
     event = get_object_or_404(Event, pk=event_id, calendar=calendar_id)
+
+    if request.method == 'POST':
+        form = EventEditorialForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+    else:
+        form = EventEditorialForm(instance=event)
+
     return render(request, 'eventary/event/edit.html', {
         'calendar': calendar,
-        'event': event
+        'event': event,
+        'eventform': form
     })
 
 
