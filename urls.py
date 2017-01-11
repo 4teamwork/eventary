@@ -38,4 +38,9 @@ urlpatterns = [
         views.event_edit,
         name='event_edit'
     ),
+    url(
+        r'^editorial/cal_(?P<calendar_id>[0-9]*)/$',
+        views.editorial,
+        name='editorial'
+    ),
 ]

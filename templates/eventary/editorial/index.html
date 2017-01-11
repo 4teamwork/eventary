@@ -1,0 +1,67 @@
+{% extends 'eventary/base.html' %}
+
+{% block 'content' %}
+<h2>Editorial</h2>
+
+<h3>Upcoming events for {{ calendar }}</h3>
+<ul>
+    {% for event in events %}
+    <li><a
+            href="{% url 'eventary:event_details' calendar.pk event.pk %}"
+            title="See details of {{ event }}">{{ event }}</a></li>
+    {% empty %}
+    <li>No upcoming events found</li>
+    {% endfor %}
+</ul>
+
+{% if events.paginator.num_pages > 1 %}
+<div>
+    {% if events.has_previous %}
+    <a href="?event_page={{ events.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ events.number }} of {{ events.paginator.num_pages }}.
+    </span>
+
+    {% if events.has_next %}
+    <a href="?event_page={{ events.next_page_number }}">next</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<h3>Proposals for {{ calendar }}</h3>
+<ul>
+    {% for proposal in proposals %}
+    <li><a 
+            href="{% url 'eventary:event_edit' calendar.pk proposal.pk %}"
+            title="See proposal of {{ proposal }}">{{ proposal }}</a></li>
+    {% empty %}
+    <li>No proposals found</li>
+    {% endfor %}
+</ul>
+
+{% if proposals.paginator.num_pages > 1 %}
+<div>
+    {% if proposals.has_previous %}
+    <a href="?proposal_page={{ proposals.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ proposals.number }} of {{ proposals.paginator.num_pages }}.
+    </span>
+
+    {% if proposals.has_next %}
+    <a href="?proposal_page={{ proposals.next_page_number }}">next</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<h3>Manage host information</h3>
+<ul>
+    {% for host in hosts %}
+    <li>{{ host }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

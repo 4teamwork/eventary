@@ -5,7 +5,7 @@
 
 <ul>
 {% for event in events %}
-    <li><a href="" title="{{ event.title }}">{{ event }}</a></li>
+    <li><a href="{% url 'eventary:event_edit' calendar.pk event.pk %}" title="{{ event.title }}">{{ event }}</a></li>
 {% endfor %}
 </ul>
 

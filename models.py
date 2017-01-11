@@ -48,12 +48,13 @@ class Event(models.Model):
         null=True,
         blank=True
     )
-    host = models.ForeignKey(Host)
+    host = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     location = models.CharField(max_length=255, null=True, blank=True)
     homepage = models.URLField(null=True, blank=True)
     published = models.BooleanField('publication status')
     description = models.TextField('description', null=True, blank=True)
+    proposed = models.DateField(auto_now_add=True)
     comment = models.CharField(
         'comment',
         max_length=255,

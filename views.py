@@ -3,12 +3,13 @@ import datetime as pydt
 import math
 
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from .forms import CalendarForm, EventForm, TimeDateForm, EventGroupingForm
 from .forms import FilterForm
-from .models import Calendar, Event, EventTimeDate, Group
+from .models import Calendar, Event, EventTimeDate, Group, Host
 
 
 def index(request):
@@ -157,11 +158,49 @@ def calendar_proposals(request, calendar_id):
     events = Event.objects.filter(
         calendar=calendar_id,
         published=False
-    )
+    ).order_by('-proposed', 'title')
 
     return render(request, 'eventary/calendar/proposals.html', {
         'calendar': calendar,
         'events': events
+    })
+
+
+def editorial(request, calendar_id):
+
+    calendar = get_object_or_404(Calendar, pk=calendar_id)
+
+    event_paginator = Paginator(Event.objects.filter(
+        calendar=calendar_id,
+        published=True
+    ).order_by('title'), 10)
+
+    try:
+        events = event_paginator.page(request.GET.get('event_page'))
+    except PageNotAnInteger:
+        events = event_paginator.page(1)
+    except EmptyPage:
+        events = event_paginator.page(event_paginator.num_pages)
+
+    proposal_paginator = Paginator(Event.objects.filter(
+        calendar=calendar_id,
+        published=False
+    ).order_by('title'), 10)
+
+    try:
+        proposals = proposal_paginator.page(request.GET.get('proposal_page'))
+    except PageNotAnInteger:
+        proposals = proposal_paginator.page(1)
+    except EmptyPage:
+        proposals = proposal_paginator.page(proposal_paginator.num_pages)
+
+    hosts = Host.objects.all()
+
+    return render(request, 'eventary/editorial/index.html', {
+        'calendar': calendar,
+        'events': events,
+        'proposals': proposals,
+        'hosts': hosts
     })
 
 

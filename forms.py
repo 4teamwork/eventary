@@ -81,6 +81,7 @@ class CalendarForm(forms.ModelForm):
 
 
 class EventForm(forms.ModelForm):
+
     class Meta:
         model = Event
         fields = [
