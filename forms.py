@@ -52,7 +52,9 @@ class CalendarForm(forms.ModelForm):
         ]
     )
 
-    def init_fields(self):
+    def __init__(self, *args, **kwargs):
+        super(CalendarForm, self).__init__(*args, **kwargs)
+
         if self.instance.pk is not None:
             self.fields['groupings'].initial = [
                 grouping.pk for grouping in Grouping.objects.filter(
@@ -98,36 +100,42 @@ class TimeDateForm(forms.Form):
 
 class EventGroupingForm(forms.Form):
 
-    def init_fields(self, calendar_id):
+    def __init__(self, *args, **kwargs):
 
-        # First we need to get the available groups
-        _groups = Group.objects.filter(
-            grouping__calendars=calendar_id
-        ).order_by('grouping').distinct()
+        calendar = kwargs.pop('calendar', None)
 
-        # Now we need to group the possible choices
-        self._groupings = {}
-        for group in _groups:
-            # if the group was not added before, do it now
-            if group.grouping not in self._groupings:
-                self._groupings[group.grouping] = []
-            self._groupings[group.grouping].append(group)
+        super(EventGroupingForm, self).__init__(*args, **kwargs)
 
-        # Generate choices using the sorted groupings
-        self._choices = {
-            grouping: [
-                (group.pk, group.title) for group in self._groupings[grouping]
-            ] for grouping in self._groupings
-        }
+        if calendar is not None:
 
-        # Now that we have the choices, generate MultipleChoiceFields with them
-        _fields = {
-            grouping.title: forms.MultipleChoiceField(
-                required=False,
-                widget=forms.CheckboxSelectMultiple,
-                choices=self._choices[grouping]
-            ) for grouping in self._groupings
-        }
+            # First we need to get the available groups
+            _groups = Group.objects.filter(
+                grouping__calendars=calendar
+            ).order_by('grouping').distinct()
 
-        # now generate the form
-        self.fields.update(_fields)
+            # group the groups by grouping
+            self._groupings = {}
+            for group in _groups:
+                # if the group was not added before, do it now
+                if group.grouping not in self._groupings:
+                    self._groupings[group.grouping] = []
+                self._groupings[group.grouping].append(group)
+
+            # Generate choices using the sorted groupings
+            self._choices = {
+                grouping: [
+                    (group.pk, group.title)
+                    for group in self._groupings[grouping]
+                ] for grouping in self._groupings
+            }
+
+            # now update the fields of the form
+            self.fields.update({
+                # each grouping gets a MultipleChoiceField
+                # TODO: replace with SearchableSelect?
+                grouping.title: forms.MultipleChoiceField(
+                    required=False,
+                    widget=forms.CheckboxSelectMultiple,
+                    choices=self._choices[grouping]
+                ) for grouping in self._groupings
+            })

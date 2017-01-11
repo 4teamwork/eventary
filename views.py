@@ -18,7 +18,6 @@ def index(request):
 def calendar_add(request):
     if request.method == 'POST':
         form = CalendarForm(request.POST)
-        form.init_fields()
 
         if form.is_valid():
             calendar = form.save()
@@ -29,7 +28,7 @@ def calendar_add(request):
 
     else:
         form = CalendarForm()
-        form.init_fields()
+
     return render(request, 'eventary/calendar/add.html', {
         'calendarform': form
     })
@@ -140,13 +139,11 @@ def calendar_details(request, calendar_id):
 def calendar_edit(request, calendar_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
     if request.method == 'POST':
-        form = CalendarForm(request.POST)
-        form.init_fields()
+        form = CalendarForm(request.POST, instance=calendar)
         if form.is_valid():
             form.save()
     else:
         form = CalendarForm(instance=calendar)
-        form.init_fields()
 
     return render(request, 'eventary/calendar/edit.html', {
         'calendar': calendar,
@@ -155,7 +152,6 @@ def calendar_edit(request, calendar_id):
 
 
 def calendar_proposals(request, calendar_id):
-    
     calendar = get_object_or_404(Calendar, pk=calendar_id)
 
     events = Event.objects.filter(
@@ -175,8 +171,7 @@ def event_add(request, calendar_id):
     if request.method == 'POST':
         eventform = EventForm(request.POST, request.FILES)
         timedateform = TimeDateForm(request.POST)
-        groupingform = EventGroupingForm(request.POST)
-        groupingform.init_fields(calendar_id)
+        groupingform = EventGroupingForm(request.POST, calendar=calendar)
 
         if (
             eventform.is_valid() and
@@ -221,8 +216,7 @@ def event_add(request, calendar_id):
     else:
         eventform = EventForm()
         timedateform = TimeDateForm()
-        groupingform = EventGroupingForm()
-        groupingform.init_fields(calendar_id)
+        groupingform = EventGroupingForm(calendar=calendar)
 
     return render(request, 'eventary/event/add.html', {
         'calendar': calendar,
