@@ -78,9 +78,9 @@ class EventTimeDate(models.Model):
     # This model allows to assign times / dates to an event
     event = models.ForeignKey(Event)
     start_date = models.DateField('start date')
-    start_time = models.TimeField('start time')
-    end_date = models.DateField('end date')
-    end_time = models.TimeField('end time')
+    start_time = models.TimeField('start time', null=True, blank=True)
+    end_date = models.DateField('end date', null=True, blank=True)
+    end_time = models.TimeField('end time', null=True, blank=True)
     comment = models.CharField(
         'comment',
         max_length=255,

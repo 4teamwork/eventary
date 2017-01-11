@@ -74,8 +74,7 @@ def calendar_details(request, calendar_id):
 
     # now get all the events for the selected year / month
     event_qs = Event.objects.filter(
-        calendar=calendar_id
-    ).exclude(
+        calendar=calendar_id,
         published=True
     ).distinct()
 
@@ -243,10 +242,17 @@ def event_add(request, calendar_id):
             timedatedata = timedateform.clean()
             timedate = EventTimeDate()
             timedate.event = event
-            timedate.start_date = timedatedata['start_date_time'].date()
-            timedate.start_time = timedatedata['start_date_time'].time()
-            timedate.end_date = timedatedata['end_date_time'].date()
-            timedate.end_time = timedatedata['end_date_time'].time()
+            timedate.start_date = timedatedata['start_date']
+
+            if timedatedata['start_time'] is not None:
+                timedate.start_time = timedatedata['start_time']
+
+            if timedatedata['end_date'] is not None:
+                timedate.end_date = timedatedata['end_date']
+
+            if timedatedata['end_time'] is not None:
+                timedate.end_time = timedatedata['end_time']
+
             timedate.save()
 
             # associate the event to the groups given by the groupingform

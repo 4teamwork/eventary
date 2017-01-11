@@ -109,12 +109,22 @@ class EventEditorialForm(forms.ModelForm):
 
 
 class TimeDateForm(forms.Form):
-    start_date_time = forms.DateTimeField(widget=DateTimePicker(options={
-        "format": "YYYY-MM-DD HH:mm"
-    }))
-    end_date_time = forms.DateTimeField(widget=DateTimePicker(options={
-        "format": "YYYY-MM-DD HH:mm",
-    }))
+    start_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=True)
+    start_time = forms.TimeField(widget=DateTimePicker(options={
+        "format": "HH:mm",
+        "pickDate": False
+    }), required=False)
+    end_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=False)
+    end_time = forms.TimeField(widget=DateTimePicker(options={
+        "format": "HH:mm",
+        "pickDate": False
+    }), required=False)
 
 
 class EventGroupingForm(forms.Form):
