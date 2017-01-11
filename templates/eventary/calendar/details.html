@@ -3,6 +3,14 @@
 {% block 'content' %}
 <h2>{{ calendar.title }}</h2>
 
+
+<h3>Events</h3>
+<ul>
+    {% for event in events %}
+    <li>{{ event }}</li>
+    {% endfor %}
+</ul>
+
 <h3>{{ now|date:"F Y" }}</h3>
 
 {% include 'eventary/components/month_as_table.html' %}
@@ -17,7 +25,5 @@
 
 <h3>Add events</h3>
 <a href="{% url 'eventary:event_add' calendar.pk %}" title="Add an event">Add an event</a>
-
-
 
 {% endblock %}

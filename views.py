@@ -73,10 +73,10 @@ def calendar_details(request, calendar_id):
     )
 
     # now get all the events for the selected year / month
-    events = Event.objects.filter(
+    event_qs = Event.objects.filter(
         calendar=calendar_id
     ).exclude(
-        published=False
+        published=True
     ).distinct()
 
     # filter the events
@@ -87,9 +87,19 @@ def calendar_details(request, calendar_id):
             groups = filterform.groups()
             # filter the events
             if len(groups) > 0:
-                events = events.filter(group__in=groups)
+                event_qs = event_qs.filter(group__in=groups)
     else:
         filterform = FilterForm(calendar=calendar)
+
+    # paginate the events
+    event_paginator = Paginator(event_qs, 10)
+
+    try:
+        events = event_paginator.page(request.GET.get('event_page'))
+    except PageNotAnInteger:
+        events = event_paginator.page(1)
+    except EmptyPage:
+        events = event_paginator.page(event_paginator.num_pages)
 
     # get the calendar for the given year and month
     # the resulting array of weeks of the month is useful
@@ -110,7 +120,7 @@ def calendar_details(request, calendar_id):
                 upper = pydt.date(year, month, day) + pydt.timedelta(days=1)
 
                 # now create a list of events sorted by date
-                _week.append((day, list(events.exclude(
+                _week.append((day, list(event_qs.exclude(
                     eventtimedate__start_date__gte=upper
                 ).exclude(
                     eventtimedate__end_date__lte=lower
