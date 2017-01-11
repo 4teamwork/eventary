@@ -1,5 +1,4 @@
-<form action="{% url 'eventary:calendar_details' calendar.pk %}" method="post">
-    {% csrf_token %}
+<form method="get">
     {{ filterform.as_table }}
     <input type="submit" value="filter">
 </form>

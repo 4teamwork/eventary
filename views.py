@@ -80,25 +80,16 @@ def calendar_details(request, calendar_id):
     ).distinct()
 
     # filter the events
-    if request.method == 'POST':
-        filterform = FilterForm(request.POST)
-        filterform.init_fields(calendar_id)
+    if request.method == 'GET':
+        filterform = FilterForm(request.GET, calendar=calendar)
         if filterform.is_valid():
-
-            # get all the primary keys
-            data = filterform.clean()
-            groups = []
-            for grouping in data:
-                groups.extend([int(pk) for pk in data[grouping]])
-
+            # get the groups selected in the filter
+            groups = filterform.groups()
             # filter the events
             if len(groups) > 0:
-                events = events.filter(
-                    group__in=groups
-                )
+                events = events.filter(group__in=groups)
     else:
-        filterform = FilterForm()
-        filterform.init_fields(calendar_id)
+        filterform = FilterForm(calendar=calendar)
 
     # get the calendar for the given year and month
     # the resulting array of weeks of the month is useful
@@ -170,10 +161,26 @@ def editorial(request, calendar_id):
 
     calendar = get_object_or_404(Calendar, pk=calendar_id)
 
-    event_paginator = Paginator(Event.objects.filter(
+    # get the querysets for the events and the proposals
+    event_qs = Event.objects.filter(
         calendar=calendar_id,
         published=True
-    ).order_by('title'), 10)
+    ).order_by('title')
+    proposal_qs = Event.objects.filter(
+        calendar=calendar_id,
+        published=False
+    ).order_by('title')
+
+    # get the filtering form and filter the query sets if possible
+    filterform = FilterForm(request.GET, calendar=calendar)
+
+    if filterform.is_valid():
+        groups = filterform.groups()
+        if len(groups) > 0:
+            event_qs = event_qs.filter(group__in=groups).distinct()
+            proposal_qs = proposal_qs.filter(group__in=groups).distinct()
+
+    event_paginator = Paginator(event_qs, 10)
 
     try:
         events = event_paginator.page(request.GET.get('event_page'))
@@ -182,10 +189,7 @@ def editorial(request, calendar_id):
     except EmptyPage:
         events = event_paginator.page(event_paginator.num_pages)
 
-    proposal_paginator = Paginator(Event.objects.filter(
-        calendar=calendar_id,
-        published=False
-    ).order_by('title'), 10)
+    proposal_paginator = Paginator(proposal_qs, 10)
 
     try:
         proposals = proposal_paginator.page(request.GET.get('proposal_page'))
@@ -200,7 +204,8 @@ def editorial(request, calendar_id):
         'calendar': calendar,
         'events': events,
         'proposals': proposals,
-        'hosts': hosts
+        'hosts': hosts,
+        'filterform': filterform
     })
 
 

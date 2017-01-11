@@ -7,11 +7,13 @@ from .models import Calendar, Grouping, Group, Event
 
 class FilterForm(forms.Form):
 
-    def init_fields(self, calendar_id):
+    def __init__(self, *args, **kwargs):
+        calendar = kwargs.pop('calendar', None)
+        super(FilterForm, self).__init__(*args, **kwargs)
 
         # get the groups
         _groups = Group.objects.filter(
-            grouping__calendars=calendar_id
+            grouping__calendars=calendar
         ).order_by('grouping').distinct()
 
         # group the groups by groupings
@@ -39,6 +41,15 @@ class FilterForm(forms.Form):
         }
 
         self.fields.update(_fields)
+
+    def groups(self):
+        groups = []
+        if self.is_valid():
+            # get all the primary keys of the groups
+            data = self.clean()
+            for grouping in data:
+                groups.extend([int(pk) for pk in data[grouping]])
+        return groups
 
 
 class CalendarForm(forms.ModelForm):
