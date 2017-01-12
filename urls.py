@@ -34,6 +34,11 @@ urlpatterns = [
         name='event_details'
     ),
     url(
+        r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*).ics$',
+        views.event_details_ics,
+        name='event_details_ics'
+    ),
+    url(
         r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*)/edit/$',
         views.event_edit,
         name='event_edit'

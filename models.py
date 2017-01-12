@@ -89,11 +89,33 @@ class EventTimeDate(models.Model):
     )
 
     def __str__(self):
-        return "{0} - {1} > {2}".format(
-            self.event.title,
-            self.start_date,
-            self.end_date
-        )
+
+        # general case, when only a start date is set
+        line = self.start_date.strftime('%x')
+
+        # if the event spans over few days
+        if (
+            self.end_date is not None and
+            self.end_date != self.start_date
+        ):
+            line = "{0} - {1}".format(
+                self.start_date.strftime('%x'),
+                self.end_date.strftime('%x')
+            )
+
+        # if the event spans over some time on the same day
+        if (
+            self.start_date == self.end_date and
+            self.start_time is not None and
+            self.end_time is not None
+        ):
+            line = "{0} {1} to {2}".format(
+                line,
+                self.start_time.strftime('%H:%M'),
+                self.end_time.strftime('%H:%M')
+            )
+
+        return line
 
 
 class Grouping(models.Model):

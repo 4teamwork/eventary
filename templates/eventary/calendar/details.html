@@ -6,12 +6,32 @@
 
 <h3>Events</h3>
 <ul>
-    {% for event in events %}
-    <li>{{ event }}</li>
+    {% for timedate in timedates %}
+    <li>{{ timedate }} - <a 
+        href="{% url 'eventary:event_details' calendar.pk timedate.event.pk %}"
+        title="{{ timedate.event.title }}">{{ timedate.event.title }}</a></li>
+    {% empty %}
+    <li>No events for the given filter found.</li>
     {% endfor %}
 </ul>
 
-<h3>{{ now|date:"F Y" }}</h3>
+{% if timedates.paginator.num_pages > 1 %}
+<div>
+    {% if timedates.has_previous %}
+    <a href="?page={{ timedates.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ timedates.number }} of {{ timedates.paginator.num_pages }}.
+    </span>
+
+    {% if timedates.has_next %}
+    <a href="?page={{ timedates.next_page_number }}">next</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<h3>{{ date|date:"F Y" }}</h3>
 
 {% include 'eventary/components/month_as_table.html' %}
 

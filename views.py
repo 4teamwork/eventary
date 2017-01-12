@@ -4,6 +4,7 @@ import math
 
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
@@ -43,42 +44,46 @@ def calendar_list(request):
 
 
 def calendar_details(request, calendar_id):
-    """Displays an overview of the selected calendar.
-
-    The monthly overview is completed with a search field."""
-    # return a 404 object if the calendar does not exist
+    # dropout if the calendar does not exist
     calendar = get_object_or_404(Calendar, pk=calendar_id)
 
-    # the default view shows the actual month
+    # if a date is given, use the given date, else use today
     now = pydt.date.today()
-
-    # but another month can be set through get variables - for "pagination"
     year = int(request.GET.get('year', default=now.year))
     month = int(request.GET.get('month', default=now.month))
+    date = pydt.date(year, month, 1)
 
-    # rewrite 'now' with the given year and month
-    now = pydt.date(year, month, 1)
-
-    # to filter the right events we need the last day of the previous month
-    # and the first day of the upcoming month
+    # compute the first day of the upcoming month and the last day of
+    # the previous month
     last_previous = pydt.date(year, month, 1) - pydt.timedelta(days=1)
-    # computing the first day of the upcoming month is slightly more complex
-    # (since timedelta can't deal with months)
     first_next = pydt.date(
-        # compute the year of the next month
         year + math.ceil(((month + 1) / 12) - 1),
-        # compute the number of the next month
         (month + 1) % 12 or 12,
         1
     )
 
-    # now get all the events for the selected year / month
+    # collect the event time dates in the previewed month and paginate them
+    timedate_qs = EventTimeDate.objects.filter(
+        Q(event__published=True) & (
+            Q(start_date__range=(last_previous, first_next)) |
+            Q(end_date__range=(last_previous, first_next))
+        )
+    )
+    timedate_paginator = Paginator(timedate_qs, 10)
+    try:
+        timedates = timedate_paginator.page(request.GET.get('page'))
+    except PageNotAnInteger:
+        timedates = timedate_paginator.page(1)
+    except EmptyPage:
+        timedates = timedate_paginator.page(timedate_paginator.num_pages)
+
+    # filter the events in the previewed month and paginate
     event_qs = Event.objects.filter(
         calendar=calendar_id,
-        published=True
+        published=True,
+        eventtimedate__in=timedate_qs
     ).distinct()
 
-    # filter the events
     if request.method == 'GET':
         filterform = FilterForm(request.GET, calendar=calendar)
         if filterform.is_valid():
@@ -90,9 +95,7 @@ def calendar_details(request, calendar_id):
     else:
         filterform = FilterForm(calendar=calendar)
 
-    # paginate the events
     event_paginator = Paginator(event_qs, 10)
-
     try:
         events = event_paginator.page(request.GET.get('event_page'))
     except PageNotAnInteger:
@@ -100,9 +103,7 @@ def calendar_details(request, calendar_id):
     except EmptyPage:
         events = event_paginator.page(event_paginator.num_pages)
 
-    # get the calendar for the given year and month
-    # the resulting array of weeks of the month is useful
-    # to arrange the calendar's events
+    # get the date's calendar sorted by weeks
     _pycal = pycal.Calendar().monthdayscalendar(year, month)
 
     # now sort the events into a table
@@ -114,24 +115,22 @@ def calendar_details(request, calendar_id):
                 # no events on no days
                 _week.append((None, []))
             else:
-                # similar to last_previous and first_next, find the limits
-                lower = pydt.date(year, month, day) - pydt.timedelta(days=1)
-                upper = pydt.date(year, month, day) + pydt.timedelta(days=1)
+                _day = pydt.date(year, month, day)
 
                 # now create a list of events sorted by date
-                _week.append((day, list(event_qs.exclude(
-                    eventtimedate__start_date__gte=upper
-                ).exclude(
-                    eventtimedate__end_date__lte=lower
+                _week.append((day, list(event_qs.filter(
+                    Q(eventtimedate__start_date=_day) |
+                    Q(eventtimedate__end_date=_day)
                 ).distinct())))
         table.append(_week)
 
     return render(request, 'eventary/calendar/details.html', {
         'calendar': calendar,
         'events': events,
+        'timedates': timedates,
         'overview': table,
         'previous': last_previous,
-        'now': now,
+        'date': date,
         'next': first_next,
         'filterform': filterform
     })
@@ -312,7 +311,28 @@ def event_search(request, calendar_id):
 
 
 def event_details(request, calendar_id, event_id):
-    event = get_object_or_404(Event, pk=event_id)
+    calendar = get_object_or_404(Calendar, pk=calendar_id)
+    event = get_object_or_404(
+        Event,
+        pk=event_id,
+        calendar=calendar,
+        published=True
+    )
     return render(request, 'eventary/event/details.html', {
+        'calendar': calendar,
+        'event': event
+    })
+
+
+def event_details_ics(request, calendar_id, event_id):
+    calendar = get_object_or_404(Calendar, pk=calendar_id)
+    event = get_object_or_404(
+        Event,
+        pk=event_id,
+        calendar=calendar,
+        published=True
+    )
+    return render(request, 'eventary/event/details.ics', {
+        'calendar': calendar,
         'event': event
     })

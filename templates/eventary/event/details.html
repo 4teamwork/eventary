@@ -5,8 +5,20 @@
 {% block 'content' %}
 <h2>{{ event.title }}</h2>
 
+<a href="{% url 'eventary:event_details_ics' calendar.pk event.pk %}" title="">Download calendar entry</a>
+
+<ul>
+{% for timedate in event.eventtimedate_set.all %}
+    <li>{{ timedate }}</li>
+{% endfor %}
+</ul>
+
 {% if event.image %}
-    <img src="{% static event.image.url %}" title="todo" alt="todo" />
+    <img src="{% static event.image.url %}" title="" alt="" />
+{% endif %}
+
+{% if event.document %}
+<a href="{% static event.document.url %}" title="">Download info sheet</a>
 {% endif %}
 
 {% endblock %}
