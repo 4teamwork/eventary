@@ -62,28 +62,22 @@ def calendar_details(request, calendar_id):
         1
     )
 
-    # collect the event time dates in the previewed month and paginate them
+    # collect the event time dates in the previewed month
     timedate_qs = EventTimeDate.objects.filter(
         Q(event__published=True) & (
             Q(start_date__range=(last_previous, first_next)) |
             Q(end_date__range=(last_previous, first_next))
         )
     )
-    timedate_paginator = Paginator(timedate_qs, 10)
-    try:
-        timedates = timedate_paginator.page(request.GET.get('page'))
-    except PageNotAnInteger:
-        timedates = timedate_paginator.page(1)
-    except EmptyPage:
-        timedates = timedate_paginator.page(timedate_paginator.num_pages)
 
-    # filter the events in the previewed month and paginate
+    # filter the published events using the time dates of the previewed month
     event_qs = Event.objects.filter(
         calendar=calendar_id,
         published=True,
         eventtimedate__in=timedate_qs
     ).distinct()
 
+    # filter the events and timedates with the parameters of the filter form
     if request.method == 'GET':
         filterform = FilterForm(request.GET, calendar=calendar)
         if filterform.is_valid():
@@ -92,9 +86,11 @@ def calendar_details(request, calendar_id):
             # filter the events
             if len(groups) > 0:
                 event_qs = event_qs.filter(group__in=groups)
+                timedate_qs = timedate_qs.filter(event__in=event_qs)
     else:
         filterform = FilterForm(calendar=calendar)
 
+    # paginate the events
     event_paginator = Paginator(event_qs, 10)
     try:
         events = event_paginator.page(request.GET.get('event_page'))
@@ -102,6 +98,15 @@ def calendar_details(request, calendar_id):
         events = event_paginator.page(1)
     except EmptyPage:
         events = event_paginator.page(event_paginator.num_pages)
+
+    # paginate the time dates
+    timedate_paginator = Paginator(timedate_qs, 10)
+    try:
+        timedates = timedate_paginator.page(request.GET.get('page'))
+    except PageNotAnInteger:
+        timedates = timedate_paginator.page(1)
+    except EmptyPage:
+        timedates = timedate_paginator.page(timedate_paginator.num_pages)
 
     # get the date's calendar sorted by weeks
     _pycal = pycal.Calendar().monthdayscalendar(year, month)
@@ -318,9 +323,17 @@ def event_details(request, calendar_id, event_id):
         calendar=calendar,
         published=True
     )
+    timedates = EventTimeDate.objects.filter(event=event)
+    groupings = {}
+    for group in event.group_set.distinct():
+        if group.grouping not in groupings:
+            groupings[group.grouping] = []
+        groupings[group.grouping].append(group)
     return render(request, 'eventary/event/details.html', {
         'calendar': calendar,
-        'event': event
+        'event': event,
+        'timedates': timedates,
+        'groupings': groupings
     })
 
 
@@ -335,4 +348,4 @@ def event_details_ics(request, calendar_id, event_id):
     return render(request, 'eventary/event/details.ics', {
         'calendar': calendar,
         'event': event
-    })
+    }, content_type='text/calendar')

@@ -7,18 +7,44 @@
 
 <a href="{% url 'eventary:event_details_ics' calendar.pk event.pk %}" title="">Download calendar entry</a>
 
+{% if timedates|length > 1 %}
+<h3>Dates</h3>
 <ul>
-{% for timedate in event.eventtimedate_set.all %}
+{% for timedate in timedates %}
     <li>{{ timedate }}</li>
 {% endfor %}
 </ul>
+{% else %}
+<h3>Date</h3>
+<div>{{ timedates|first }}</div>
+{% endif %}
+
+{% for grouping, groups in groupings.items %}
+    <h4>{{ grouping }}</h4>
+    {% if groups|length > 1 %}
+    <ul>
+    {% for group in groups %}
+        <li>{{ group }}</li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <div>{{ groups|first }}</div>
+    {% endif %}
+{% endfor %}
 
 {% if event.image %}
     <img src="{% static event.image.url %}" title="" alt="" />
 {% endif %}
 
-{% if event.document %}
-<a href="{% static event.document.url %}" title="">Download info sheet</a>
+{% if event.description %}
+<h3>Beschreibung</h3>
+<p>{{ event.description }}</p>
 {% endif %}
+
+{% if event.document %}
+<h3>Downloads</h3>
+<div><a href="{% static event.document.url %}" title="">Download info sheet</a></div>
+{% endif %}
+
 
 {% endblock %}

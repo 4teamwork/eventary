@@ -1,13 +1,14 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//4teamwork/Veranstaltungskalender//EN
+PRODID:http://www.stadt.winterthur.ch/agenda/{{calendar.title}}/
+METHOD:PUBLISH
 BEGIN:VEVENT
-SUMMARY:{{ event.description }}
-UID:{{}}@{{}}
-STATUS:{{ }}
-DTSTAMP:19970610T172345Z
-DTSTART:19970714T170000Z
-DTEND:19970715T040000Z
-SUMMARY:Bastille Day Party
+UID:{{ event.pk }}@{{ event.host }}
+DTSTAMP:{{ now }}
+SUMMARY:{{ event.title }}
+DESCRIPTION:{{ event.description }}
+DTSTART:{{ timedate.start_date }}
+DTEND:{{ timedate.end_date }}
+LOCATION:
 END:VEVENT
 END:VCALENDAR

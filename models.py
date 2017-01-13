@@ -123,10 +123,7 @@ class Grouping(models.Model):
     calendars = models.ManyToManyField('Calendar', blank=True, null=True)
 
     def __str__(self):
-        return "{0} -- {1}".format(
-            self.title,
-            ", ".join([c.title for c in self.calendars.all()])
-        )
+        return self.title
 
 
 class Group(models.Model):
@@ -135,4 +132,4 @@ class Group(models.Model):
     events = models.ManyToManyField('Event', null=True, blank=True)
 
     def __str__(self):
-        return "{0} -- {1}".format(self.title, self.grouping.title)
+        return self.title
