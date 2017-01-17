@@ -1,14 +1,10 @@
 {% extends 'eventary/base.html' %}
 
+{% load bootstrap_themes %}
 {% load static %}
 
-{% block 'head' %}
-<link rel="stylesheet" 
-    href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
-<link rel="stylesheet" 
-    href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.css">
+{% block 'extra_head' %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
 {{ timedateform.media }}
 {% endblock %}
 

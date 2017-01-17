@@ -273,8 +273,8 @@ def event_add(request, calendar_id):
                     group.save()
 
             return HttpResponseRedirect(reverse(
-                'eventary:event_details',
-                args=[calendar.pk, event.pk]
+                'eventary:calendar_details',
+                args=[calendar.pk]
             ))
 
     else:

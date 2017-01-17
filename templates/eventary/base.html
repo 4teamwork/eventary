@@ -1,13 +1,33 @@
+{% load bootstrap_tags %}
+{% load bootstrap_themes %}
+{% load static %}
+<!DOCTYPE html>
 <html>
     <head>
+        <title>{% block 'title' %}Eventary{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="charset" content="utf-8">
+
         {% block 'head' %}
+        <script type="text/javascript" src="{% static 'static_jquery/js/jquery.min.js' %}"></script>
+        {% bootstrap_styles theme='flatly' type='min.css' %}
+        {% bootstrap_script use_min=True %}
+        {% block 'extra_head' %}
+        {% endblock %}
         {% endblock %}
     </head>
-    <body>
-        {% block 'navigation' %}
-        {% endblock %}
-
-        {% block 'content' %}
+    <body style="padding-top: 60px;">
+        {% block 'body' %}
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                {% block 'navigation' %}
+                {% endblock %}
+            </div>
+        </nav>
+        <div class="container">
+            {% block 'content' %}
+            {% endblock %}
+        </div>
         {% endblock %}
     </body>
 </html>

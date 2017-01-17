@@ -56,15 +56,16 @@ class CalendarForm(forms.ModelForm):
 
     groupings = forms.MultipleChoiceField(
         required=False,
-        widget=forms.CheckboxSelectMultiple,
-        choices=[
-            (grouping.pk, grouping.title)
-            for grouping in Grouping.objects.all()
-        ]
+        widget=forms.CheckboxSelectMultiple
     )
 
     def __init__(self, *args, **kwargs):
         super(CalendarForm, self).__init__(*args, **kwargs)
+
+        self.fields['groupings'].choices = [
+            (grouping.pk, grouping.title)
+            for grouping in Grouping.objects.all()
+        ]
 
         if self.instance.pk is not None:
             self.fields['groupings'].initial = [
