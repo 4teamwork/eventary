@@ -125,7 +125,11 @@ def calendar_details(request, calendar_id):
                 # now create a list of events sorted by date
                 _week.append((day, list(event_qs.filter(
                     Q(eventtimedate__start_date=_day) |
-                    Q(eventtimedate__end_date=_day)
+                    Q(eventtimedate__end_date=_day) |
+                    Q(
+                        eventtimedate__start_date__lte=_day,
+                        eventtimedate__end_date__gte=_day
+                    )
                 ).distinct())))
         table.append(_week)
 
