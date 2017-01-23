@@ -98,7 +98,8 @@ class EventForm(forms.ModelForm):
         model = Event
         fields = [
             'title', 'host', 'location', 'image', 'document',
-            'homepage', 'description', 'comment', 'prize'
+            'homepage', 'description', 'comment', 'prize',
+            'recurring'
         ]
 
 
