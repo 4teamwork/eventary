@@ -1,0 +1,8 @@
+Django
+django-bootstrap-themes
+django-forms-bootstrap
+django-autoslug
+django-jquery
+django-bootstrap3-datetimepicker  # install from git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.gi
+django-bootstrap3
+
