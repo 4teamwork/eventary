@@ -68,6 +68,7 @@ class Event(models.Model):
         null=True,
         blank=True
     )
+    recurring = models.BooleanField('recurring event', default=False)
 
     def __str__(self):
         return "{0} @ {1} by {2}".format(self.title, self.location, self.host)
