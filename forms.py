@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -6,6 +8,15 @@ from .models import Calendar, Grouping, Group, Event
 
 
 class FilterForm(forms.Form):
+
+    from_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=False)
+    to_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=False)
 
     def __init__(self, *args, **kwargs):
         calendar = kwargs.pop('calendar', None)
@@ -48,7 +59,11 @@ class FilterForm(forms.Form):
             # get all the primary keys of the groups
             data = self.clean()
             for grouping in data:
-                groups.extend([int(pk) for pk in data[grouping]])
+                if (
+                    data[grouping] is not None and
+                    not isinstance(data[grouping], datetime.date)
+                ):
+                    groups.extend([int(pk) for pk in data[grouping]])
         return groups
 
 

@@ -1,177 +1,15 @@
-import calendar as pycal
-import datetime as pydt
-import math
-
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
-from .forms import CalendarForm, EventForm, EventEditorialForm, TimeDateForm
-from .forms import EventGroupingForm, FilterForm
-from .models import Calendar, Event, EventTimeDate, Group, Host
+from ..forms import EventForm, EventEditorialForm, TimeDateForm
+from ..forms import EventGroupingForm, FilterForm
+from ..models import Calendar, Event, EventTimeDate, Group, Host
 
 
 def index(request):
     return render(request, 'eventary/index.html', {})
-
-
-def calendar_add(request):
-    if request.method == 'POST':
-        form = CalendarForm(request.POST)
-
-        if form.is_valid():
-            calendar = form.save()
-            return HttpResponseRedirect(reverse(
-                'eventary:calendar_details',
-                args=[calendar.pk]
-            ))
-
-    else:
-        form = CalendarForm()
-
-    return render(request, 'eventary/calendar/add.html', {
-        'calendarform': form
-    })
-
-
-def calendar_list(request):
-    calendars = Calendar.objects.all()
-    return render(request, 'eventary/calendar/list.html', {
-        'calendars': calendars
-    })
-
-
-def calendar_details(request, calendar_id):
-    # dropout if the calendar does not exist
-    calendar = get_object_or_404(Calendar, pk=calendar_id)
-
-    # if a date is given, use the given date, else use today
-    now = pydt.date.today()
-    year = int(request.GET.get('year', default=now.year))
-    month = int(request.GET.get('month', default=now.month))
-    date = pydt.date(year, month, 1)
-
-    # compute the first day of the upcoming month and the last day of
-    # the previous month
-    last_previous = pydt.date(year, month, 1) - pydt.timedelta(days=1)
-    first_next = pydt.date(
-        year + math.ceil(((month + 1) / 12) - 1),
-        (month + 1) % 12 or 12,
-        1
-    )
-
-    # collect the event time dates in the previewed month
-    timedate_qs = EventTimeDate.objects.filter(
-        Q(event__published=True) & (
-            Q(start_date__range=(last_previous, first_next)) |
-            Q(end_date__range=(last_previous, first_next))
-        )
-    )
-
-    # filter the published events using the time dates of the previewed month
-    event_qs = Event.objects.filter(
-        calendar=calendar_id,
-        published=True,
-        eventtimedate__in=timedate_qs
-    ).distinct()
-
-    # filter the events and timedates with the parameters of the filter form
-    if request.method == 'GET':
-        filterform = FilterForm(request.GET, calendar=calendar)
-        if filterform.is_valid():
-            # get the groups selected in the filter
-            groups = filterform.groups()
-            # filter the events
-            if len(groups) > 0:
-                event_qs = event_qs.filter(group__in=groups)
-                timedate_qs = timedate_qs.filter(event__in=event_qs)
-    else:
-        filterform = FilterForm(calendar=calendar)
-
-    # paginate the events
-    event_paginator = Paginator(event_qs, 10)
-    try:
-        events = event_paginator.page(request.GET.get('event_page'))
-    except PageNotAnInteger:
-        events = event_paginator.page(1)
-    except EmptyPage:
-        events = event_paginator.page(event_paginator.num_pages)
-
-    # paginate the time dates
-    timedate_paginator = Paginator(timedate_qs, 10)
-    try:
-        timedates = timedate_paginator.page(request.GET.get('page'))
-    except PageNotAnInteger:
-        timedates = timedate_paginator.page(1)
-    except EmptyPage:
-        timedates = timedate_paginator.page(timedate_paginator.num_pages)
-
-    # get the date's calendar sorted by weeks
-    _pycal = pycal.Calendar().monthdayscalendar(year, month)
-
-    # now sort the events into a table
-    table = []
-    for week in _pycal:
-        _week = []
-        for day in week:
-            if day == 0:
-                # no events on no days
-                _week.append((None, []))
-            else:
-                _day = pydt.date(year, month, day)
-
-                # now create a list of events sorted by date
-                _week.append((day, list(event_qs.filter(
-                    Q(eventtimedate__start_date=_day) |
-                    Q(eventtimedate__end_date=_day) |
-                    Q(
-                        eventtimedate__start_date__lte=_day,
-                        eventtimedate__end_date__gte=_day
-                    )
-                ).distinct())))
-        table.append(_week)
-
-    return render(request, 'eventary/calendar/details.html', {
-        'calendar': calendar,
-        'events': events,
-        'timedates': timedates,
-        'overview': table,
-        'previous': last_previous,
-        'date': date,
-        'next': first_next,
-        'filterform': filterform
-    })
-
-
-def calendar_edit(request, calendar_id):
-    calendar = get_object_or_404(Calendar, pk=calendar_id)
-    if request.method == 'POST':
-        form = CalendarForm(request.POST, instance=calendar)
-        if form.is_valid():
-            form.save()
-    else:
-        form = CalendarForm(instance=calendar)
-
-    return render(request, 'eventary/calendar/edit.html', {
-        'calendar': calendar,
-        'calendarform': form
-    })
-
-
-def calendar_proposals(request, calendar_id):
-    calendar = get_object_or_404(Calendar, pk=calendar_id)
-
-    events = Event.objects.filter(
-        calendar=calendar_id,
-        published=False
-    ).order_by('-proposed', 'title')
-
-    return render(request, 'eventary/calendar/proposals.html', {
-        'calendar': calendar,
-        'events': events
-    })
 
 
 def editorial(request, calendar_id):
@@ -277,7 +115,7 @@ def event_add(request, calendar_id):
                     group.save()
 
             return HttpResponseRedirect(reverse(
-                'eventary:calendar_details',
+                'eventary:calendar-details',
                 args=[calendar.pk]
             ))
 

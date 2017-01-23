@@ -1,0 +1,35 @@
+{% extends 'eventary/calendars/details.html' %}
+
+
+{% block 'content' %}
+    <h2>{{ calendar.title }}</h2>
+
+    <h3>Proposals</h3>
+    <ul>
+        {% for event in object_list %}
+        <li>{{ event }}</li>
+        {% empty %}
+        <li>No events found.</li>
+        {% endfor %}
+    </ul>
+
+    {% if paginator.num_pages > 1 %}
+    <div>
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span>
+            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+        </span>
+
+        {% if timedates.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <h3>Apply a filter</h3>
+    {% include 'eventary/forms/filter_calendar.html' with filterform=form %}
+
+{% endblock %}

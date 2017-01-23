@@ -1,0 +1,16 @@
+{% extends 'eventary/base.html' %}
+
+{% block 'content' %}
+<h2>Veranstaltungskalender</h2>
+
+{% if calendar_list|length %}
+<ul>
+    {% for calendar in calendar_list %}
+    <li><a href="{% url 'eventary:calendar-details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Noch keine Veranstaltungskalender freigeschalten</p>
+{% endif %}
+
+{% endblock %}

@@ -1,30 +1,53 @@
 from django.conf.urls import url
 
 from . import views
+from .views import calendars, events
 
 app_name = 'eventary'
 
 urlpatterns = [
+
+    # lists the events of all calendars
     url(r'^$', views.index, name='index'),
-    url(r'^add/$', views.calendar_add, name='calendar_add'),
-    url(r'^list/$', views.calendar_list, name='calendar_list'),
+
+    # lists the calendars
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/$',
-        views.calendar_details,
-        name='calendar_details'
+        r'^calendars/$',
+        calendars.CalendarListView.as_view(),
+        name='calendar-list'
     ),
+
+    # creates a new calendar
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/edit/$',
-        views.calendar_edit,
-        name='calendar_edit'
+        r'^calendars/new/$',
+        calendars.CalendarCreateView.as_view(),
+        name='calendar-create'
     ),
+
+    # shows a calendar's detailed view
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/proposals/$',
-        views.calendar_proposals,
-        name='calendar_proposals'
+        r'^cal_(?P<pk>[0-9]*)/$',
+        calendars.CalendarDetailView.as_view(),
+        name='calendar-details'
     ),
+
+    # updates a calendar
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/add/$',
+        r'^cal_(?P<pk>[0-9]*)/edit/$',
+        calendars.CalendarUpdateView.as_view(),
+        name='calendar-update'
+    ),
+
+    # lists the proposals of a calendar
+    url(
+        r'^proposals/cal_(?P<pk>[0-9]*)/$',
+        events.ProposalListView.as_view(),
+        name='proposals-list'
+    ),
+
+    # creates a new event
+    url(
+        r'^cal_(?P<calendar_id>[0-9]*)/new/$',
         views.event_add,
         name='event_add'
     ),

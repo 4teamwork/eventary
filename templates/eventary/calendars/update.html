@@ -1,0 +1,14 @@
+{% extends 'eventary/base.html' %}
+
+{% block 'extra_head' %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
+{{ timedateform.media }}
+{% endblock %}
+
+{% block 'content' %}
+<h2>Edit {{ calendar.title }}</h2>
+
+{% include 'eventary/forms/edit_calendar.html' with calendarform=form %}
+
+
+{% endblock %}

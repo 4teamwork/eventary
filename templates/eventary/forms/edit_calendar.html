@@ -1,7 +1,6 @@
-<form action="{% url 'eventary:calendar_edit' calendar.pk %}" method="post">
+{% load bootstrap_tags %}
+<form method="post">
     {% csrf_token %}
-    <table>
-        {{ calendarform.as_table }}
-    </table>
+    {{ calendarform|as_bootstrap }}
     <input type="submit" value="change">
 </form>

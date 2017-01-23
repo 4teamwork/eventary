@@ -1,4 +1,5 @@
+{% load bootstrap_tags %}
 <form method="get">
-    {{ filterform.as_table }}
+    {{ filterform|as_bootstrap }}
     <input type="submit" value="filter">
 </form>
