@@ -1,0 +1,177 @@
+[
+{
+  "model": "eventary.grouping",
+  "pk": 1,
+  "fields": {
+    "title": "Zielgruppe",
+    "calendars": []
+  }
+},
+{
+  "model": "eventary.grouping",
+  "pk": 2,
+  "fields": {
+    "title": "Musikstil",
+    "calendars": []
+  }
+},
+{
+  "model": "eventary.grouping",
+  "pk": 3,
+  "fields": {
+    "title": "Sportart",
+    "calendars": []
+  }
+},
+{
+  "model": "eventary.grouping",
+  "pk": 4,
+  "fields": {
+    "title": "Altersklasse",
+    "calendars": []
+  }
+},
+{
+  "model": "eventary.grouping",
+  "pk": 5,
+  "fields": {
+    "title": "Sprache",
+    "calendars": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 1,
+  "fields": {
+    "title": "Familien",
+    "grouping": 1,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 2,
+  "fields": {
+    "title": "Singles",
+    "grouping": 1,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 3,
+  "fields": {
+    "title": "Paare",
+    "grouping": 1,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 4,
+  "fields": {
+    "title": "Klassik",
+    "grouping": 2,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 5,
+  "fields": {
+    "title": "Barock",
+    "grouping": 2,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 6,
+  "fields": {
+    "title": "Pop",
+    "grouping": 2,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 7,
+  "fields": {
+    "title": "Rock",
+    "grouping": 2,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 8,
+  "fields": {
+    "title": "Fussball",
+    "grouping": 3,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 9,
+  "fields": {
+    "title": "Basketball",
+    "grouping": 3,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 10,
+  "fields": {
+    "title": "Platzgen",
+    "grouping": 3,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 11,
+  "fields": {
+    "title": "Schulklassen",
+    "grouping": 1,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 12,
+  "fields": {
+    "title": "Jugendliche",
+    "grouping": 4,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 13,
+  "fields": {
+    "title": "Kinder",
+    "grouping": 4,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 14,
+  "fields": {
+    "title": "Erwachsene",
+    "grouping": 4,
+    "events": []
+  }
+},
+{
+  "model": "eventary.group",
+  "pk": 15,
+  "fields": {
+    "title": "Rentner",
+    "grouping": 4,
+    "events": []
+  }
+}
+]
