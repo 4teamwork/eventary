@@ -11,6 +11,13 @@ class IndexView(TemplateView):
 
     template_name = 'eventary/index.html'
 
+    def get_form(self):
+        if len(self.request.GET):
+            form = GenericFilterForm(self.request.GET, prefix="filter")
+        else:
+            form = GenericFilterForm(prefix="filter")
+        return form
+
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
@@ -34,9 +41,30 @@ class IndexView(TemplateView):
         ).distinct()
 
         # filter the events and proposals
+        form = self.get_form()
         context.update({
-            'form': GenericFilterForm()
+            'form': form
         })
+        if form.is_valid():
+            data = form.clean()
+            if data['from_date'] is not None:
+                event_list = event_list.exclude(
+                    eventtimedate__start_date__lt=data['from_date']
+                )
+                proposal_list = proposal_list.exclude(
+                    eventtimedate__start_date__lt=data['from_date']
+                )
+            if data['to_date'] is not None:
+                event_list = event_list.exclude(
+                    eventtimedate__start_date__gt=data['to_date']
+                )
+                proposal_list = proposal_list.exclude(
+                    eventtimedate__start_date__gt=data['to_date']
+                )
+            groups = form.groups()
+            if len(groups) > 0:
+                event_list = event_list.filter(group__in=groups)
+                proposal_list = proposal_list.filter(group__in=groups)
 
         # create some paginators for the event lists
         event_paginator = Paginator(event_list, 25)
