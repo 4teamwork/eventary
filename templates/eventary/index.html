@@ -49,13 +49,13 @@
     <div class="pagination">
         {% if event_list.has_previous %}
         <a
-            href="?event_page={{ event_list.previous_page_number}}"
-            title="previous page">previous</a>
+         href="?{% url_replace request 'event_page' event_list.previous_page_number %}"
+         title="previous page">previous</a>
         {% endif %}
         <span>Page {{ event_list.number }} of {{ event_list.paginator.num_pages }}</span>
         {% if event_list.has_next %}
         <a 
-            href="?event_page={{ event_list.next_page_number }}"
+            href="?{% url_replace request 'event_page' event_list.next_page_number %}"
             title="next page">next</a>
         {% endif %}
     </div>
@@ -89,14 +89,14 @@
     <div class="pagination">
         {% if proposal_list.has_previous %}
         <a
-            href="?proposal_page={{ proposal_list.previous_page_number}}"
-            title="previous page">previous</a>
+         href="?{% url_replace request 'proposal_page' proposal_list.previous_page_number %}"
+         title="previous page">previous</a>
         {% endif %}
         <span>Page {{ proposal_list.number }} of {{ proposal_list.paginator.num_pages }}</span>
         {% if proposal_list.has_next %}
         <a 
-            href="?proposal_page={{ proposal_list.next_page_number }}"
-            title="next page">next</a>
+         href="?{% url_replace request 'proposal_page' proposal_list.next_page_number %}"
+         title="next page">next</a>
         {% endif %}
     </div>
     {% endif %}

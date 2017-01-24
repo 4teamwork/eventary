@@ -1,5 +1,3 @@
-from time import strftime
-
 from django import template
 from ..models import Event
 
@@ -55,3 +53,11 @@ def time(value):
                 result += "{0}".format(timedate.start_date)
 
     return result
+
+
+@register.simple_tag
+def url_replace(request, field, value):
+    """Replaces a specific GET parameter"""
+    _dict = request.GET.copy()
+    _dict[field] = value
+    return _dict.urlencode()
