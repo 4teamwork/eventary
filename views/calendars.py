@@ -34,6 +34,25 @@ class CalendarDetailView(FormMixin, SingleObjectMixin, ListView):
     model = Calendar
     template_name = 'eventary/calendars/details.html'
 
+    def filter_qs(self, qs):
+        form = self.get_form()
+        if form.is_valid():
+            data = form.clean()
+            # filter by date
+            if data['from_date'] is not None:
+                qs = qs.exclude(
+                    eventtimedate__start_date__lt=data['from_date']
+                )
+            if data['to_date'] is not None:
+                qs = qs.exclude(
+                    eventtimedate__end_date__gt=data['to_date']
+                )
+            # filter by the selected groups
+            groups = form.groups()
+            if len(groups) > 0:
+                qs = qs.filter(group__in=groups)
+        return qs.distinct()
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object(queryset=Calendar.objects.all())
         return super(CalendarDetailView, self).get(request, *args, **kwargs)
@@ -43,28 +62,22 @@ class CalendarDetailView(FormMixin, SingleObjectMixin, ListView):
         context['calendar'] = self.object
 
         # filter the list of events with the form data
-        form = context.get('form')
-        if form.is_valid():
-            data = form.clean()
-            object_qs = self.get_queryset()
-            # filter by date
-            if data['from_date'] is not None:
-                object_qs = object_qs.exclude(
-                    eventtimedate__start_date__lt=data['from_date']
-                )
-            if data['to_date'] is not None:
-                object_qs = object_qs.exclude(
-                    eventtimedate__end_date__gt=data['to_date']
-                )
-            # filter by the selected groups
-            groups = form.groups()
-            if len(groups) > 0:
-                object_qs = object_qs.filter(
-                    group__in=groups
-                )
-            context['object_list'] = object_qs.distinct()
+        object_qs = self.get_queryset()
+        object_qs = self.filter_qs(object_qs)
 
-        context['event_list'] = context.get('object_list')
+        # paginate the querysets
+        paginator, page, object_list, is_paginated = self.paginate_queryset(
+            object_qs,
+            1
+        )
+
+        # update the context
+        context.update({
+            'paginator': paginator,
+            'page': page,
+            'object_list': object_list,
+            'event_list': object_list
+        })
 
         return context
 

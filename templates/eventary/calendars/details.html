@@ -1,44 +1,59 @@
 {% extends 'eventary/base.html' %}
 
+{% load eventary_tags %}
+{% load bootstrap_tags %}
+
 {% block 'extra_head' %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
 {{ form.media }}
 {% endblock %}
 
 {% block 'content' %}
-    <h2>{{ calendar.title }}</h2>
+<h2>{{ calendar.title }}</h2>
 
-    <h3>Events</h3>
-    <ul>
+<h3>Upcoming events</h3>
+
+{% if object_list|length %}
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Event</th>
+        </tr>
         {% for event in object_list %}
-        <li>{{ event }}</li>
-        {% empty %}
-        <li>No events found.</li>
+        <tr>
+            <td>{{ event|to_date }}</td>
+            <td>{{ event|to_time }}</td>
+            <td><a
+                href="{% url 'eventary:event-details' event.calendar.pk event.pk %}"
+                title="{{ event.title }}">{{ event.title }}</a></td>
+        </tr>
         {% endfor %}
-    </ul>
-
-    <p>Cannot find the event you're looking for? <a
-        href="{% url 'eventary:event_add' calendar.pk %}"
-        title="Propose an event">Propose your event now!</a></p>
+    </table>
 
     {% if paginator.num_pages > 1 %}
     <div>
-        {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% if page.has_previous %}
+        <a href="?{% url_replace request 'page' page.previous_page_number %}">previous</a>
         {% endif %}
-
-        <span>
-            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
-        </span>
-
-        {% if timedates.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <span>Page {{ page.number }} of {{ paginator.num_pages }}.</span>
+        {% if page.has_next %}
+        <a href="?{% url_replace request 'page' page.next_page_number %}">next</a>
         {% endif %}
     </div>
     {% endif %}
 
-    <h3>Apply a filter</h3>
-    {% include 'eventary/forms/filter_calendar.html' with filterform=form %}
+{% else %}
+    <p>Cannot find the event you're looking for? <a
+        href="{% url 'eventary:event_add' calendar.pk %}"
+        title="Propose an event">Propose your event now!</a></p>
+{% endif %}
 
+
+<h3>Apply a filter</h3>
+<form method="get">
+    {{ form|as_bootstrap }}
+    <input type="submit" value="filter">
+</form>
 
 {% endblock %}
