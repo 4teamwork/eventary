@@ -119,9 +119,17 @@ class EventTimeDate(models.Model):
         return line
 
 
+class GroupingType(models.Model):
+    label = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.label
+
+
 class Grouping(models.Model):
     title = models.CharField(max_length=255)
     calendars = models.ManyToManyField('Calendar', blank=True, null=True)
+    grouping_type = models.ForeignKey('GroupingType')
 
     def __str__(self):
         return self.title

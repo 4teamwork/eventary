@@ -7,6 +7,60 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from .models import Calendar, Grouping, Group, Event
 
 
+class GenericFilterForm(forms.Form):
+
+    from_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=False)
+    to_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(GenericFilterForm, self).__init__(*args, **kwargs)
+
+        # group the groups by groupingstypes
+        _groupings = {}
+        for group in Group.objects.all():
+            # if the group was not added before, do it now
+            if group.grouping.grouping_type not in _groupings:
+                _groupings[group.grouping.grouping_type] = []
+            _groupings[group.grouping.grouping_type].append(group)
+
+        # generate choices using the sorted groupings
+        _choices = {
+            grouping: [
+                (group.pk, group.title) for group in _groupings[grouping]
+            ] for grouping in _groupings
+        }
+
+        # Now that we have the choices, generate MultipleChoiceFields with them
+        _fields = {
+            grouping.label: forms.MultipleChoiceField(
+                required=False,
+                widget=forms.CheckboxSelectMultiple,
+                choices=_choices[grouping]
+            ) for grouping in _groupings
+        }
+
+        self.fields.update(_fields)
+
+    def groups(self):
+        groups = []
+        if self.is_valid():
+            # get all the primary keys of the groups
+            data = self.clean()
+            for grouping in data:
+                if (
+                    data[grouping] is not None and
+                    not isinstance(data[grouping], datetime.date)
+                ):
+                    groups.extend([int(pk) for pk in data[grouping]])
+        return groups
+
+
 class FilterForm(forms.Form):
 
     from_date = forms.DateField(widget=DateTimePicker(options={

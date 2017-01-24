@@ -1,6 +1,7 @@
 {% extends 'eventary/base.html' %}
 
 {% load eventary_tags %}
+{% load bootstrap_tags %}
 
 {% block 'extra_head' %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
@@ -103,5 +104,11 @@
 {% else %}
     <p>No upcoming proposed events!</p>
 {% endif %}
+
+<h2>Apply a filter</h2>
+<form method="get">
+    {{ form|as_bootstrap }}
+    <input type="submit" value="filter">
+</form>
 
 {% endblock %}

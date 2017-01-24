@@ -3,6 +3,7 @@ from datetime import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import TemplateView
 
+from ..forms import GenericFilterForm
 from ..models import Calendar, Event, EventTimeDate
 
 
@@ -31,6 +32,11 @@ class IndexView(TemplateView):
             published=False,
             eventtimedate__start_date__gte=today,
         ).distinct()
+
+        # filter the events and proposals
+        context.update({
+            'form': GenericFilterForm()
+        })
 
         # create some paginators for the event lists
         event_paginator = Paginator(event_list, 25)
