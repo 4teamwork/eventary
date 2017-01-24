@@ -28,13 +28,6 @@ class IndexView(TemplateView):
                 qs = qs.filter(group__in=groups)
         return qs
 
-    def get_form(self):
-        if len(self.request.GET):
-            self.form = GenericFilterForm(self.request.GET, prefix="filter")
-        else:
-            self.form = GenericFilterForm(prefix="filter")
-        return self.form
-
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
@@ -86,6 +79,13 @@ class IndexView(TemplateView):
         })
 
         return context
+
+    def get_form(self):
+        if len(self.request.GET):
+            self.form = GenericFilterForm(self.request.GET, prefix="filter")
+        else:
+            self.form = GenericFilterForm(prefix="filter")
+        return self.form
 
     def paginate_qs(self, qs, prefix='paginator'):
         paginator = Paginator(qs, 25)
