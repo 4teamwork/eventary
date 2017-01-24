@@ -17,6 +17,10 @@
         {% endfor %}
     </ul>
 
+    <p>Cannot find the event you're looking for? <a
+        href="{% url 'eventary:event_add' calendar.pk %}"
+        title="Propose an event">Propose your event now!</a></p>
+
     {% if paginator.num_pages > 1 %}
     <div>
         {% if page_obj.has_previous %}
@@ -36,7 +40,5 @@
     <h3>Apply a filter</h3>
     {% include 'eventary/forms/filter_calendar.html' with filterform=form %}
 
-    <h3>Add events</h3>
-    <a href="{% url 'eventary:event_add' calendar.pk %}" title="Add an event">Add an event</a>
 
 {% endblock %}

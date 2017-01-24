@@ -12,39 +12,96 @@
 <h1>Eventary - an inventary for events</h1>
 
 <h2>Calendars</h2>
-<p>There are {{ calendar_list|length }} calendars with {{ event_list|length }} published and {{ proposal_list|length }} proposed events on {{ timedate_list|length }} dates.</p>
+<p>There are {{ calendar_list|length }} calendars with {{ event_count }} published and {{ proposal_count }} proposed events on {{ timedate_count }} dates.</p>
 
 <ul>
 {% for calendar in calendar_list %}
-<li><a href="{% url 'eventary:calendar-details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }} - {{ calendar.event_set.all|length }} events</a></li>
+<li><a href="{% url 'eventary:calendar-details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }} - {{ calendar.event_set.count }} events</a></li>
 {% endfor %}
 </ul>
+
+<p>You cannot find the calendar you're looking for? <a
+    href="{% url 'eventary:calendar-create' %}"
+    title="Add a new calendar now!">Add a new calendar now!</a></p>
 
 <h2>Upcoming events</h2>
 
-<table>
-  <tr>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Calendar</th>
-      <th>Event</th>
-  </tr>
-{% for event in upcoming_event_list %}
-  <tr>
-      <td>{{ event|to_date }}</td>
-      <td>{{ event|to_time }}</td>
-      <td>{{ event.calendar.title }}</td>
-      <td><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></td>
-  </tr>
-{% endfor %}
-</table>
+{% if event_list|length %}
+    <table>
+      <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Calendar</th>
+          <th>Event</th>
+      </tr>
+    {% for event in event_list %}
+        <tr>
+            <td>{{ event|to_date }}</td>
+            <td>{{ event|to_time }}</td>
+            <td>{{ event.calendar.title }}</td>
+            <td><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    {% if event_list.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if event_list.has_previous %}
+        <a
+            href="?event_page={{ event_list.previous_page_number}}"
+            title="previous page">previous</a>
+        {% endif %}
+        <span>Page {{ event_list.number }} of {{ event_list.paginator.num_pages }}</span>
+        {% if event_list.has_next %}
+        <a 
+            href="?event_page={{ event_list.next_page_number }}"
+            title="next page">next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% else %}
+    <p>No upcoming events!</p>
+{% endif %}
 
 <h2>Upcoming proposals</h2>
 
-<ul>
-{% for event in upcoming_proposal_list %}
-<li><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></li>
-{% endfor %}
-</ul>
+{% if proposal_list|length %}
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Calendar</th>
+            <th>Proposed event</th>
+        </tr>
+    {% for event in proposal_list %}
+        <tr>
+            <td>{{ event|to_date }}</td>
+            <td>{{ event|to_time }}</td>
+            <td>{{ event.calendar.title }}</td>
+            <td><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    {% if proposal_list.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if proposal_list.has_previous %}
+        <a
+            href="?proposal_page={{ proposal_list.previous_page_number}}"
+            title="previous page">previous</a>
+        {% endif %}
+        <span>Page {{ proposal_list.number }} of {{ proposal_list.paginator.num_pages }}</span>
+        {% if proposal_list.has_next %}
+        <a 
+            href="?proposal_page={{ proposal_list.next_page_number }}"
+            title="next page">next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% else %}
+    <p>No upcoming proposed events!</p>
+{% endif %}
 
 {% endblock %}
