@@ -1,5 +1,7 @@
 {% extends 'eventary/base.html' %}
 
+{% load eventary_tags %}
+
 {% block 'extra_head' %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
 {{ form.media }}
@@ -20,11 +22,22 @@
 
 <h2>Upcoming events</h2>
 
-<ul>
+<table>
+  <tr>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Calendar</th>
+      <th>Event</th>
+  </tr>
 {% for event in upcoming_event_list %}
-<li><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></li>
+  <tr>
+      <td>{{ event|to_date }}</td>
+      <td>{{ event|to_time }}</td>
+      <td>{{ event.calendar.title }}</td>
+      <td><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></td>
+  </tr>
 {% endfor %}
-</ul>
+</table>
 
 <h2>Upcoming proposals</h2>
 
