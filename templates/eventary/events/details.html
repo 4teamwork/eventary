@@ -6,7 +6,7 @@
 {% block 'content' %}
 <h2>{{ event.title }}</h2>
 
-<a href="{% url 'eventary:event_details_ics' calendar.pk event.pk %}" title="">Download calendar entry</a>
+<a href="{% url 'eventary:event_details_ics' event.calendar.pk event.pk %}" title="">Download calendar entry</a>
 
 {% if event.image %}
     <img src="{% static event.image.url %}" title="" alt="" />

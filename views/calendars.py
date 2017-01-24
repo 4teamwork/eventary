@@ -68,7 +68,7 @@ class CalendarDetailView(FormMixin, SingleObjectMixin, ListView):
         # paginate the querysets
         paginator, page, object_list, is_paginated = self.paginate_queryset(
             object_qs,
-            1
+            25
         )
 
         # update the context
