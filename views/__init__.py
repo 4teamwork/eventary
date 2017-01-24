@@ -8,10 +8,6 @@ from ..forms import EventGroupingForm, FilterForm
 from ..models import Calendar, Event, EventTimeDate, Group, Host
 
 
-def index(request):
-    return render(request, 'eventary/index.html', {})
-
-
 def editorial(request, calendar_id):
 
     calendar = get_object_or_404(Calendar, pk=calendar_id)

@@ -1,4 +1,4 @@
-from ..models import Event
+from django.views.generic import DetailView
 
 from .calendars import CalendarDetailView
 
@@ -9,3 +9,8 @@ class ProposalListView(CalendarDetailView):
 
     def get_queryset(self):
         return self.object.event_set.filter(published=False)
+
+
+class EventDetailView(DetailView):
+
+    template_name = 'eventary/events/details.html'

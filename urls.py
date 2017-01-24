@@ -1,14 +1,14 @@
 from django.conf.urls import url
 
 from . import views
-from .views import calendars, events
+from .views import calendars, events, index
 
 app_name = 'eventary'
 
 urlpatterns = [
 
     # lists the events of all calendars
-    url(r'^$', views.index, name='index'),
+    url(r'^$', index.IndexView.as_view(), name='index'),
 
     # lists the calendars
     url(
@@ -44,6 +44,14 @@ urlpatterns = [
         events.ProposalListView.as_view(),
         name='proposals-list'
     ),
+
+    url(
+        r'cal_(?P<calendar_pk>[0-9]*)/evt_(?P<pk>[0-9]*)/$',
+        events.EventDetailView.as_view(),
+        name='event-details'
+    ),
+
+
 
     # creates a new event
     url(

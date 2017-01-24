@@ -1,0 +1,37 @@
+{% extends 'eventary/base.html' %}
+
+{% block 'extra_head' %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
+{{ form.media }}
+{% endblock %}
+
+{% block 'content' %}
+
+<h1>Eventary - an inventary for events</h1>
+
+<h2>Calendars</h2>
+<p>There are {{ calendar_list|length }} calendars with {{ event_list|length }} published and {{ proposal_list|length }} proposed events on {{ timedate_list|length }} dates.</p>
+
+<ul>
+{% for calendar in calendar_list %}
+<li><a href="{% url 'eventary:calendar-details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }} - {{ calendar.event_set.all|length }} events</a></li>
+{% endfor %}
+</ul>
+
+<h2>Upcoming events</h2>
+
+<ul>
+{% for event in upcoming_event_list %}
+<li><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>Upcoming proposals</h2>
+
+<ul>
+{% for event in upcoming_proposal_list %}
+<li><a href="{% url 'eventary:event-details' event.calendar.pk event.pk %}" title="{{ event.title }}">{{ event.title }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}
