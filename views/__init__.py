@@ -60,74 +60,6 @@ def editorial(request, calendar_id):
     })
 
 
-def event_add(request, calendar_id):
-    calendar = get_object_or_404(Calendar, pk=calendar_id)
-
-    if request.method == 'POST':
-        eventform = EventForm(request.POST, request.FILES)
-        timedateform = TimeDateForm(request.POST)
-        groupingform = EventGroupingForm(request.POST, calendar=calendar)
-
-        if (
-            eventform.is_valid() and
-            timedateform.is_valid() and
-            groupingform.is_valid()
-        ):
-
-            # prepare the event and store it
-            event = eventform.save(commit=False)
-            event.calendar = calendar
-            event.published = False
-            event.save()
-
-            # create the time date objects for te event
-            timedatedata = timedateform.clean()
-            timedate = EventTimeDate()
-            timedate.event = event
-            timedate.start_date = timedatedata['start_date']
-
-            if timedatedata['start_time'] is not None:
-                timedate.start_time = timedatedata['start_time']
-
-            if timedatedata['end_date'] is not None:
-                timedate.end_date = timedatedata['end_date']
-
-            if timedatedata['end_time'] is not None:
-                timedate.end_time = timedatedata['end_time']
-
-            timedate.save()
-
-            # associate the event to the groups given by the groupingform
-            groupingdata = groupingform.clean()
-            for grouping in groupingdata:
-                for group_pk in groupingdata[grouping]:
-                    group = get_object_or_404(
-                        Group,
-                        pk=int(group_pk),
-                        grouping__title=grouping
-                    )
-
-                    group.events.add(event)
-                    group.save()
-
-            return HttpResponseRedirect(reverse(
-                'eventary:calendar-details',
-                args=[calendar.pk]
-            ))
-
-    else:
-        eventform = EventForm()
-        timedateform = TimeDateForm()
-        groupingform = EventGroupingForm(calendar=calendar)
-
-    return render(request, 'eventary/event/add.html', {
-        'calendar': calendar,
-        'eventform': eventform,
-        'timedateform': timedateform,
-        'groupingform': groupingform
-    })
-
-
 def event_edit(request, calendar_id, event_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
     event = get_object_or_404(Event, pk=event_id, calendar=calendar_id)
@@ -150,28 +82,6 @@ def event_search(request, calendar_id):
     calendar = get_object_or_404(Calendar, pk=calendar_id)
     return render(request, 'eventary/event/search.html', {
         'calendar': calendar
-    })
-
-
-def event_details(request, calendar_id, event_id):
-    calendar = get_object_or_404(Calendar, pk=calendar_id)
-    event = get_object_or_404(
-        Event,
-        pk=event_id,
-        calendar=calendar,
-        published=True
-    )
-    timedates = EventTimeDate.objects.filter(event=event)
-    groupings = {}
-    for group in event.group_set.distinct():
-        if group.grouping not in groupings:
-            groupings[group.grouping] = []
-        groupings[group.grouping].append(group)
-    return render(request, 'eventary/event/details.html', {
-        'calendar': calendar,
-        'event': event,
-        'timedates': timedates,
-        'groupings': groupings
     })
 
 

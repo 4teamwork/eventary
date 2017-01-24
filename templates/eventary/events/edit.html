@@ -15,7 +15,6 @@
     {% csrf_token %}
     <table>
     {{ eventform|as_bootstrap }}
-    {{ timedateform|as_bootstrap }}
     {{ groupingform|as_bootstrap }}
     </table>
     {% for hidden in timedateform.hidden_fields %}

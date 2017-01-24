@@ -43,11 +43,11 @@
     </div>
     {% endif %}
 
-{% else %}
-    <p>Cannot find the event you're looking for? <a
-        href="{% url 'eventary:event_add' calendar.pk %}"
-        title="Propose an event">Propose your event now!</a></p>
 {% endif %}
+
+<p>Cannot find the event you're looking for? <a
+    href="{% url 'eventary:event-create' calendar.pk %}"
+    title="Propose an event">Propose your event now!</a></p>
 
 
 <h3>Apply a filter</h3>

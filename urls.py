@@ -59,17 +59,13 @@ urlpatterns = [
         name='event-create'
     ),
 
-    # creates a new event
-    #url(
-    #    r'^cal_(?P<calendar_id>[0-9]*)/new/$',
-    #    views.event_add,
-    #    name='event_add'
-    #),
+    # edit an event
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*)/$',
-        views.event_details,
-        name='event_details'
+        r'cal_(?P<pk>[0-9]*)/evt_(?P<event_pk>[0-9]*)/update/$',
+        events.EventEditView.as_view(),
+        name='event-edit'
     ),
+
     url(
         r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*).ics$',
         views.event_details_ics,

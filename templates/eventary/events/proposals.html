@@ -2,34 +2,50 @@
 
 
 {% block 'content' %}
-    <h2>{{ calendar.title }}</h2>
+<h2>{{ calendar.title }}</h2>
 
-    <h3>Proposals</h3>
-    <ul>
-        {% for event in object_list %}
-        <li>{{ event }}</li>
-        {% empty %}
-        <li>No events found.</li>
+<h3>Upcoming events</h3>
+
+{% if object_list|length %}
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Event</th>
+        </tr>
+        {% for proposal in object_list %}
+        <tr>
+            <td>{{ proposal|to_date }}</td>
+            <td>{{ proposal|to_time }}</td>
+            <td><a
+                href="{% url 'eventary:event_edit' proposal.calendar.pk proposal.pk %}"
+                title="{{ proposal.title }}">{{ proposal.title }}</a></td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 
     {% if paginator.num_pages > 1 %}
     <div>
-        {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% if page.has_previous %}
+        <a href="?{% url_replace request 'page' page.previous_page_number %}">previous</a>
         {% endif %}
-
-        <span>
-            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
-        </span>
-
-        {% if timedates.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <span>Page {{ page.number }} of {{ paginator.num_pages }}.</span>
+        {% if page.has_next %}
+        <a href="?{% url_replace request 'page' page.next_page_number %}">next</a>
         {% endif %}
     </div>
     {% endif %}
 
-    <h3>Apply a filter</h3>
-    {% include 'eventary/forms/filter_calendar.html' with filterform=form %}
+{% endif %}
 
+<p>Cannot find the proposal you're looking for? <a
+    href="{% url 'eventary:event-create' calendar.pk %}"
+    title="Propose an event">Make a new proposal now!</a></p>
+
+
+<h3>Apply a filter</h3>
+<form method="get">
+    {{ form|as_bootstrap }}
+    <input type="submit" value="filter">
+</form>
 {% endblock %}
