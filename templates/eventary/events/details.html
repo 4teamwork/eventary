@@ -1,0 +1,51 @@
+{% extends 'eventary/base.html' %}
+
+{% load static %}
+{% load eventary_tags %}
+
+{% block 'content' %}
+<h2>{{ event.title }}</h2>
+
+<a href="{% url 'eventary:event_details_ics' calendar.pk event.pk %}" title="">Download calendar entry</a>
+
+{% if event.image %}
+    <img src="{% static event.image.url %}" title="" alt="" />
+{% endif %}
+
+<table>
+    <tr>
+        <th>Date</th><td>{{ event|to_date }}</td>
+    </tr>
+    <tr>
+        <th>Time</th><td>{{ event|to_time }}</td>
+    </tr>
+    <tr>
+        <th>Location</th><td>{{ event.location }}</td>
+    </tr>
+    {% for grouping, groups in groupings.items %}
+    <tr>
+        <th>{{ grouping }}</th><td>{{ groups|join:", " }}</td>
+    </tr>
+    {% endfor %}
+
+    <tr>
+        <th>Entry fee</th><td>{{ event.prize }}</td>
+    </tr>
+
+    <tr>
+        <th>Host</th><td>{{ event.host }}</td>
+    </tr>
+
+</table>
+
+{% if event.description %}
+<h3>Description</h3>
+<p>{{ event.description }}</p>
+{% endif %}
+
+{% if event.document %}
+<h3>Downloads</h3>
+<div><a href="{% static event.document.url %}" title="">Download info sheet</a></div>
+{% endif %}
+
+{% endblock %}

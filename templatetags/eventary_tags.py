@@ -7,7 +7,7 @@ register = template.Library()
 @register.filter(name='to_date')
 def date(value):
     """Returns the date of an event as a string"""
-    result = ""
+    results = []
     if isinstance(value, Event):
         timedates = value.eventtimedate_set.all()
         for timedate in timedates:
@@ -25,19 +25,21 @@ def date(value):
                 if timedate.start_date.year != timedate.end_date.year:
                     startformat += "%Y"
 
-                result = "{0} - {1}".format(
+                results.append("{0} - {1}".format(
                     timedate.start_date.strftime(startformat),
                     timedate.end_date.strftime("%d.%m.%Y")
-                )
+                ))
             else:
-                result = "{0}".format(timedate.start_date.strftime("%d.%m.%Y"))
-    return result
+                results.append("{0}".format(
+                    timedate.start_date.strftime("%d.%m.%Y")
+                ))
+    return len(results) and ", ".join(results) or ""
 
 
 @register.filter(name='to_time')
 def time(value):
     """Returns the time of an event as a string"""
-    result = ""
+    results = []
     if isinstance(value, Event):
         timedates = value.eventtimedate_set.all()
         for timedate in timedates:
@@ -45,14 +47,14 @@ def time(value):
                 timedate.end_time is not None and
                 timedate.start_time is not None
             ):
-                result += "{0} - {1}".format(
+                results.append("{0} - {1}".format(
                     timedate.start_time.strftime("%H:%M"),
                     timedate.end_time.strftime("%H:%M")
-                )
+                ))
             else:
-                result += "{0}".format(timedate.start_date)
+                results.append("{0}".format(timedate.start_date))
 
-    return result
+    return len(results) and ", ".join(results) or ""
 
 
 @register.simple_tag
@@ -61,3 +63,10 @@ def url_replace(request, field, value):
     _dict = request.GET.copy()
     _dict[field] = value
     return _dict.urlencode()
+
+
+@register.filter(name='join')
+def join(value, arg):
+    return str(arg).join([
+        getattr(g, 'title', str(g)) for g in value
+    ])
