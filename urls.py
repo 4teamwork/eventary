@@ -45,20 +45,26 @@ urlpatterns = [
         name='proposals-list'
     ),
 
+    # displays an event's details
     url(
         r'cal_(?P<calendar_pk>[0-9]*)/evt_(?P<pk>[0-9]*)/$',
         events.EventDetailView.as_view(),
         name='event-details'
     ),
 
-
-
     # creates a new event
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/new/$',
-        views.event_add,
-        name='event_add'
+        r'cal_(?P<pk>[0-9]*)/new/$',
+        events.EventCreateView.as_view(),
+        name='event-create'
     ),
+
+    # creates a new event
+    #url(
+    #    r'^cal_(?P<calendar_id>[0-9]*)/new/$',
+    #    views.event_add,
+    #    name='event_add'
+    #),
     url(
         r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*)/$',
         views.event_details,
