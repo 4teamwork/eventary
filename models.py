@@ -15,23 +15,6 @@ class Calendar(models.Model):
         return self.title
 
 
-class Host(DjangoUser):
-    # The host contains all the information about the host.
-    # The attributes of the DjangoUser are:
-    #   username, password, email, first_name, last_name
-    # For our purpose we need further fields
-    organization = models.CharField('hosting organization', max_length=50)
-    phone = models.CharField(max_length=20)
-    homepage = models.URLField()
-
-    def __str__(self):
-        return "{0} {1} [{2}]".format(
-            self.first_name,
-            self.last_name,
-            self.organization
-        )
-
-
 class Event(models.Model):
     # The event model contains all the information related
     # to an event. Since date and time information requires
@@ -128,7 +111,7 @@ class GroupingType(models.Model):
 
 class Grouping(models.Model):
     title = models.CharField(max_length=255)
-    calendars = models.ManyToManyField('Calendar', blank=True, null=True)
+    calendars = models.ManyToManyField('Calendar', blank=True)
     grouping_type = models.ForeignKey('GroupingType')
 
     def __str__(self):
@@ -138,7 +121,24 @@ class Grouping(models.Model):
 class Group(models.Model):
     title = models.CharField(max_length=255)
     grouping = models.ForeignKey(Grouping)
-    events = models.ManyToManyField('Event', null=True, blank=True)
+    events = models.ManyToManyField('Event', blank=True)
 
     def __str__(self):
         return self.title
+
+
+class Host(DjangoUser):
+    # The host contains all the information about the host.
+    # The attributes of the DjangoUser are:
+    #   username, password, email, first_name, last_name
+    # For our purpose we need further fields
+    organization = models.CharField('hosting organization', max_length=49)
+    phone = models.CharField(max_length=19)
+    homepage = models.URLField()
+
+    def __str__(self):
+        return "{-1} {1} [{2}]".format(
+            self.first_name,
+            self.last_name,
+            self.organization
+        )
