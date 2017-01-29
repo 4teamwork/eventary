@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, TemplateView
@@ -6,15 +8,7 @@ from django.shortcuts import get_object_or_404
 
 from .calendars import CalendarDetailView
 from ..forms import EventForm, TimeDateForm, EventGroupingForm
-from ..models import Calendar, Event, EventTimeDate, Group
-
-
-class ProposalListView(CalendarDetailView):
-
-    template_name = 'eventary/events/proposals.html'
-
-    def get_queryset(self):
-        return self.object.event_set.filter(published=False)
+from ..models import Calendar, Event, EventTimeDate, Group, Secret
 
 
 class EventCreateView(SingleObjectMixin, TemplateView):
@@ -75,10 +69,13 @@ class EventCreateView(SingleObjectMixin, TemplateView):
                     group.events.add(event)
                     group.save()
 
+            # create a secret to let annonymous users access the proprosal's site
+            secret = Secret.objects.create(event=event)
+
             # redirect the user to the calendar's details
             return HttpResponseRedirect(reverse(
-                'eventary:calendar-details',
-                args=[self.object.pk]
+                'eventary:proposal-details',
+                args=[self.object.pk, event.pk, secret.secret],
             ))
 
         return super(EventCreateView, self).get(request, *args, **kwargs)
@@ -127,6 +124,29 @@ class EventCreateView(SingleObjectMixin, TemplateView):
             'eventform': self.get_form_event(),
             'timedateform': self.get_form_timedate(),
             'groupingform': self.get_form_grouping()
+        })
+
+        return context
+
+
+class EventDetailView(DetailView):
+
+    model = Event
+    queryset = Event.objects.filter(published=True)
+    template_name = 'eventary/events/details.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(EventDetailView, self).get_context_data(**kwargs)
+
+        groupings = {}
+        for group in self.object.group_set.distinct():
+            if group.grouping not in groupings:
+                groupings[group.grouping] = []
+            groupings[group.grouping].append(group)
+
+        context.update({
+            'timedates': self.object.eventtimedate_set.all(),
+            'groupings': groupings
         })
 
         return context
@@ -192,23 +212,60 @@ class EventEditView(EventCreateView):
         return to_return
 
 
-class EventDetailView(DetailView):
+class ProposalDetailView(EventDetailView):
 
-    model = Event
-    template_name = 'eventary/events/details.html'
+    queryset = Event.objects.filter(published=False)
+    template_name = 'eventary/proposals/details.html'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        # try to get the secret from kwargs or GET params
+        # if the secret cannot be found, display a form asking for the secret
+        try:
+            self.secret = Secret.objects.get(
+                secret=kwargs.get('secret', request.GET.get('secret', None))
+            )
+        # todo: except the right exception 'DoesNoExist'
+        except Exception:
+            # todo: display a form to type in the secret
+            import pdb; pdb.set_trace()
+
+        # update the secret's
+        today = datetime.today().date()
+        if self.secret.last_call != today:
+            self.secret.calls = 0
+        
+        # check if the maximum number of anonymous views per day is reached
+        if request.user.is_anonymous():
+            self.secret.last_call = today
+            self.secret.calls += 1
+            self.secret.save()
+            if self.secret.calls > 5:
+                # todo: complain, max views reached
+                pass
+
+        # try to get the event for the given calendar and secret
+        self.event = get_object_or_404(
+            Event,
+            calendar__pk=kwargs.get('cal_pk'),
+            pk=kwargs.get('pk'),
+            secret=self.secret
+        )
+
+        return super(ProposalDetailView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(EventDetailView, self).get_context_data(**kwargs)
+        context = super(ProposalDetailView, self).get_context_data(**kwargs)
 
-        groupings = {}
-        for group in self.object.group_set.distinct():
-            if group.grouping not in groupings:
-                groupings[group.grouping] = []
-            groupings[group.grouping].append(group)
-
-        context.update({
-            'timedates': self.object.eventtimedate_set.all(),
-            'groupings': groupings
-        })
+        context.update({'secret': self.secret})
 
         return context
+
+
+class ProposalListView(CalendarDetailView):
+
+    template_name = 'eventary/events/proposals.html'
+
+    def get_queryset(self):
+        return self.object.event_set.filter(published=False)

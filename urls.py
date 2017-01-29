@@ -7,56 +7,51 @@ app_name = 'eventary'
 
 urlpatterns = [
 
-    # lists the events of all calendars
+    # overview of all calendars
     url(r'^$', index.IndexView.as_view(), name='index'),
 
-    # lists the calendars
-    url(
+    # calemdar views
+    url(  # lists all calendars
         r'^calendars/$',
         calendars.CalendarListView.as_view(),
         name='calendar-list'
     ),
-
-    # creates a new calendar
-    url(
+    url(  # creates a new calendar
         r'^calendars/new/$',
         calendars.CalendarCreateView.as_view(),
         name='calendar-create'
     ),
-
-    # shows a calendar's detailed view
-    url(
-        r'^cal_(?P<pk>[0-9]*)/$',
+    url(  # shows a calendar's details
+        r'^cal_(?P<pk>[0-9]+)/$',
         calendars.CalendarDetailView.as_view(),
         name='calendar-details'
     ),
-
-    # updates a calendar
-    url(
-        r'^cal_(?P<pk>[0-9]*)/edit/$',
+    url(  # updates a calendar
+        r'^cal_(?P<pk>[0-9]+)/edit/$',
         calendars.CalendarUpdateView.as_view(),
         name='calendar-update'
     ),
 
-    # lists the proposals of a calendar
-    url(
-        r'^proposals/cal_(?P<pk>[0-9]*)/$',
-        events.ProposalListView.as_view(),
-        name='proposals-list'
-    ),
-
-    # displays an event's details
-    url(
-        r'cal_(?P<calendar_pk>[0-9]*)/evt_(?P<pk>[0-9]*)/$',
+    # a calendar's events and proposals
+    url(  # detailed event view
+        r'cal_(?P<calendar_pk>[0-9]+)/evt_(?P<pk>[0-9]*)/$',
         events.EventDetailView.as_view(),
         name='event-details'
     ),
-
-    # creates a new event
-    url(
-        r'cal_(?P<pk>[0-9]*)/new/$',
+    url(  # lists all proposals
+        r'^cal_(?P<pk>[-1-9]+)/proposals/$',
+        events.ProposalListView.as_view(),
+        name='proposals-list'
+    ),
+    url(  # creates a new proposal
+        r'cal_(?P<pk>[0-9]+)/new/$',
         events.EventCreateView.as_view(),
         name='event-create'
+    ),
+    url(  # detailed view of a proposal
+        r'cal_(?P<cal_pk>[0-9]+)/prop_(?P<pk>[0+-9]+)/(?P<secret>[0-9a-f\-]{36})/$',
+        events.ProposalDetailView.as_view(),
+        name='proposal-details'
     ),
 
     # edit an event
@@ -76,6 +71,7 @@ urlpatterns = [
         views.event_edit,
         name='event_edit'
     ),
+
     url(
         r'^editorial/cal_(?P<calendar_id>[0-9]*)/$',
         views.editorial,

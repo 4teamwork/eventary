@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User as DjangoUser
 from django.db import models
 
@@ -111,8 +113,8 @@ class GroupingType(models.Model):
 
 class Grouping(models.Model):
     title = models.CharField(max_length=255)
-    calendars = models.ManyToManyField('Calendar', blank=True)
-    grouping_type = models.ForeignKey('GroupingType')
+    calendars = models.ManyToManyField(Calendar, blank=True)
+    grouping_type = models.ForeignKey(GroupingType)
 
     def __str__(self):
         return self.title
@@ -121,7 +123,7 @@ class Grouping(models.Model):
 class Group(models.Model):
     title = models.CharField(max_length=255)
     grouping = models.ForeignKey(Grouping)
-    events = models.ManyToManyField('Event', blank=True)
+    events = models.ManyToManyField(Event, blank=True)
 
     def __str__(self):
         return self.title
@@ -142,3 +144,12 @@ class Host(DjangoUser):
             self.last_name,
             self.organization
         )
+
+
+class Secret(models.Model):
+
+    event = models.OneToOneField(Event)
+    secret = models.UUIDField(default=uuid.uuid4, editable=False)
+    calls = models.IntegerField(default=0)
+    creation_date = models.DateField(auto_now_add=True)
+    last_call = models.DateField(null=True)

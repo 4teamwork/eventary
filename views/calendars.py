@@ -22,8 +22,9 @@ class CalendarCreateView(CreateView):
     def get_success_url(self):
         """Returns the user to the details view of the created calendar."""
 
+        # todo: create a secret and create a link with 'n' previews per day
         return reverse(
-            'eventary:calendar_details',
+            'eventary:calendar-details',
             args=[self.object.pk]
         )
 

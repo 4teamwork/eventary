@@ -4,9 +4,9 @@
 {% load eventary_tags %}
 
 {% block 'content' %}
-<h2>{{ event.title }}</h2>
+<h2>Proposal: {{ event.title }}</h2>
 
-<a href="{% url 'eventary:event_details_ics' event.calendar.pk event.pk %}" title="">Download calendar entry</a>
+<p>Today's number of anonymous views: {{ secret.calls }}.{% if secret.last_call %}Last anonymous call {{ secret.last_call|date }}.{% endif %}</p>
 
 {% if event.image %}
     <img src="{% static event.image.url %}" title="" alt="" />
