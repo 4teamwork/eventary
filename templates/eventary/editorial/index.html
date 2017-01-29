@@ -1,5 +1,7 @@
 {% extends 'eventary/base.html' %}
 
+{% load bootstrap_tags %}
+
 {% block 'content' %}
 <h2>Editorial</h2>
 
@@ -58,13 +60,9 @@
 {% endif %}
 
 <h3>Apply a filter</h3>
-{% include 'eventary/forms/filter_calendar.html' %}
-
-<h3>Manage host information</h3>
-<ul>
-    {% for host in hosts %}
-    <li>{{ host }}</li>
-    {% endfor %}
-</ul>
+<form method="get">
+    {{ filterform|as_bootstrap }}
+    <input type="submit" value="filter">
+</form>
 
 {% endblock %}

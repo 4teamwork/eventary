@@ -133,7 +133,7 @@ class EventDetailView(DetailView):
 
     model = Event
     queryset = Event.objects.filter(published=True)
-    template_name = 'eventary/events/details.html'
+    template_name = 'eventary/events/published.html'
 
     def get_context_data(self, **kwargs):
         context = super(EventDetailView, self).get_context_data(**kwargs)
@@ -154,7 +154,7 @@ class EventDetailView(DetailView):
 
 class EventEditView(EventCreateView):
 
-    template_name = 'eventary/events/edit.html'
+    template_name = 'eventary/events/update.html'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -215,7 +215,7 @@ class EventEditView(EventCreateView):
 class ProposalDetailView(EventDetailView):
 
     queryset = Event.objects.filter(published=False)
-    template_name = 'eventary/proposals/details.html'
+    template_name = 'eventary/events/proposed.html'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -263,6 +263,7 @@ class ProposalDetailView(EventDetailView):
         return context
 
 
+# todo: move this to editorial/redactors views
 class ProposalListView(CalendarDetailView):
 
     template_name = 'eventary/events/proposals.html'

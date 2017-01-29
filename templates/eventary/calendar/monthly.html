@@ -1,8 +1,0 @@
-{% extends 'eventary/base.html' %}
-
-{% block 'content' %}
-<h2>{{ now|date:"F Y" }} - {{ calendar.title }}</h2>
-
-{% include 'eventary/components/month_as_table.html' %}
-
-{% endblock %}
