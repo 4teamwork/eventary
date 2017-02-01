@@ -1,4 +1,7 @@
 from django import template
+from django.contrib.auth.models import Group, User
+from django.template.loader import render_to_string
+
 from ..models import Event
 
 register = template.Library()
@@ -104,3 +107,20 @@ def join(value, arg):
     return str(arg).join([
         getattr(g, 'title', str(g)) for g in value
     ])
+
+    
+@register.filter(name='navigation')
+def navigation(value):
+
+    user_type = 'users'
+    if isinstance(value, User):
+
+        admins = Group.objects.get(pk=2)
+        redactors = Group.objects.get(pk=1)
+        
+        if redactors in value.groups.all():
+            user_type = 'redactors'
+        elif admins in value.groups.all():
+            user_type = 'admins'
+
+    return render_to_string('eventary/navigation/{0}.html'.format(user_type))

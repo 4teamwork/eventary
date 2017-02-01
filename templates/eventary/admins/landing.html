@@ -17,12 +17,12 @@
 
 <ul>
 {% for calendar in calendar_list %}
-<li><a href="{% url 'eventary:calendar-details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }} - {{ calendar.event_set.count }} events</a></li>
+<li><a href="{% url 'eventary:users-calendar_details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }} - {{ calendar.event_set.count }} events</a></li>
 {% endfor %}
 </ul>
 
 <p>You cannot find the calendar you're looking for? <a
-    href="{% url 'eventary:calendar-create' %}"
+    href="{% url 'eventary:admins-create_calendar' %}"
     title="Add a new calendar now!">Add a new calendar now!</a></p>
 
 <h2>Upcoming events</h2>

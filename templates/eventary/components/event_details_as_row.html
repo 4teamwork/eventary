@@ -4,9 +4,9 @@
     <td>{{ event.calendar.title }}</td>
     <td><a
 	{% if event.published %}
-	href="{% url 'eventary:event-details' event.calendar.pk event.pk %}"
+	href="{% url 'eventary:users-event_details' event.calendar.pk event.pk %}"
  	{% else %}
-	href="{% url 'eventary:proposal-details' event.calendar.pk event.pk event.secret.secret %}"
+	href="{% url 'eventary:users-proposal_details' event.calendar.pk event.pk event.secret.secret %}"
  	{% endif %}
 	title="{{ event.title }}">{{ event.title }}</a></td>
 </tr>
