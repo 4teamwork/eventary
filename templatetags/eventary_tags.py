@@ -108,16 +108,16 @@ def join(value, arg):
         getattr(g, 'title', str(g)) for g in value
     ])
 
-    
+
 @register.filter(name='navigation')
 def navigation(value):
 
     user_type = 'users'
     if isinstance(value, User):
 
-        admins = Group.objects.get(pk=2)
-        redactors = Group.objects.get(pk=1)
-        
+        admins = Group.objects.get(name='eventary_admins')
+        redactors = Group.objects.get(name='eventary_redactors')
+
         if redactors in value.groups.all():
             user_type = 'redactors'
         elif admins in value.groups.all():

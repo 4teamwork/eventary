@@ -12,8 +12,8 @@ from ..models import Calendar, Event, EventTimeDate
 class UserRedirectView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        admins = Group.objects.get(pk=2)
-        redactors = Group.objects.get(pk=1)
+        admins = Group.objects.get(name='eventary_admins')
+        redactors = Group.objects.get(name='eventary_redactors')
         
         if redactors in self.request.user.groups.all():
             return reverse('eventary:redactors-landing')

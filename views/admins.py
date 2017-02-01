@@ -2,7 +2,9 @@ from datetime import datetime
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.views.generic import CreateView, TemplateView, UpdateView
+from django.db.models import Case, IntegerField, Sum, When
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, TemplateView
 
 from ..forms import CalendarForm, GenericFilterForm
 from ..models import Calendar, Event, EventTimeDate
@@ -19,9 +21,38 @@ class CalendarCreateView(CreateView):
 
         # todo: create a secret and create a link with 'n' previews per day
         return reverse(
-            'eventary:calendar-details',
+            'eventary:users-calendar_details',
             args=[self.object.pk]
         )
+
+
+class CalendarDeleteView(DeleteView):
+
+    model = Calendar
+    template_name = 'eventary/admins/delete_calendar.html'
+
+    def get_success_url(self):
+        return reverse('eventary:admins-list_calendars')
+
+
+class CalendarListView(ListView):
+
+    model = Calendar
+    template_name = 'eventary/admins/list_calendars.html'
+
+    def get_queryset(self):
+        qs = super(CalendarListView, self).get_queryset()
+        qs = qs.annotate(
+            num_events=Sum(Case(When(
+                event__published=True,
+                then=1
+            )), output_field=IntegerField(), distinct=True),
+            num_proposals=Sum(Case(When(
+                event__published=False,
+                then=1
+            )), output_field=IntegerField(), distinct=True),
+        )
+        return qs
 
 
 class CalendarUpdateView(UpdateView):
@@ -29,6 +60,9 @@ class CalendarUpdateView(UpdateView):
     form_class = CalendarForm
     model = Calendar
     template_name = 'eventary/admins/update_calendar.html'
+
+    def get_success_url(self):
+        return reverse('eventary:admins-list_calendars')
 
 
 class LandingView(TemplateView):
@@ -57,7 +91,7 @@ class LandingView(TemplateView):
 
         # general context data
         context.update({
-            'calendar_list':  Calendar.objects.all(),
+            'calendar_list':  self.get_queryset(),
             'event_count':    Event.objects.filter(published=True).count(),
             'proposal_count': Event.objects.filter(published=False).count(),
             'timedate_count': EventTimeDate.objects.count()
@@ -108,6 +142,19 @@ class LandingView(TemplateView):
         else:
             self.form = GenericFilterForm(prefix='filter')
         return self.form
+
+    def get_queryset(self):
+        qs = Calendar.objects.annotate(
+            num_events=Sum(Case(When(
+                event__published=True,
+                then=1
+            )), output_field=IntegerField(), distinct=True),
+            num_proposals=Sum(Case(When(
+                event__published=False,
+                then=1
+            )), output_field=IntegerField(), distinct=True),
+        ).order_by()
+        return qs
 
     def paginate_qs(self, qs, prefix='paginator'):
         paginator = Paginator(qs, 25)

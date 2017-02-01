@@ -1,0 +1,31 @@
+<tr>
+    <td>
+        {{ calendar.title }}
+    </td>
+    <td>
+        <a
+        class="btn btn-default btn-xs"
+        href="{% url 'eventary:users-calendar_details' calendar.pk %}"
+        role="button"
+        title="View {{ calendar.title }}">
+            <i class="glyphicon glyphicon-eye-open"></i>
+        </a>
+        <a
+        class="btn btn-default btn-xs"
+        href="{% url 'eventary:admins-update_calendar' calendar.pk %}"
+        role="button"
+        title="Update {{ calendar.title }}">
+            <i class="glyphicon glyphicon-pencil"></i>
+        </a>
+        <a
+        class="btn btn-default btn-xs"
+        href="{% url 'eventary:admins-delete_calendar' calendar.pk %}"
+        role="button"
+        title="Delete {{ calendar.title }}">
+            <i class="glyphicon glyphicon-trash"></i>
+        </a>
+    </td>
+    <td>{{ calendar.grouping_set.all|join:", " }}</td>
+    <td>{{ calendar.num_events }}</td>
+    <td>{{ calendar.num_proposals }}</td>
+</tr>

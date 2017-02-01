@@ -4,12 +4,11 @@
 {% load eventary_tags %}
 
 {% block 'content' %}
-<h2>{{ event.title }}</h2>
+<h1>Proposal: {{ event.title }}</h1>
 
-<a href="{% url 'eventary:users-export_event_to_ics' event.calendar.pk event.pk %}" title="{{ event.title }} as calendar entry">
-    Download calendar entry
-    <i class="glyphicon glyphicon-download"></i>
-</a>
+<p>Today's number of anonymous views: {{ secret.calls }}.{% if secret.last_call %}Last anonymous call {{ secret.last_call|date }}.{% endif %}</p>
+
+<h2>Details</h2>
 
 {% if event.image %}
     <img src="{% static event.image.url %}" title="" alt="" />
@@ -36,10 +35,20 @@
                 Update '{{ event.title }}' <i class="glyphicon glyphicon-pencil"></i>
             </a>
         </td>
+        <td>
+            <a href="{% url 'eventary:redactors-publish_event' event.calendar.pk event.pk %}" title="Approve '{{ event.title }}'">
+                Approve '{{ event.title }}' <i class="glyphicon glyphicon-ok"></i> 
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'eventary:redactors-delete_event' event.calendar.pk event.pk %}" title="Delete '{{ event.title }}'">
+                Delete '{{ event.title }}' <i class="glyphicon glyphicon-remove"></i> 
+            </a>
+        </td>
     </tr>
 </table>
 {% endif %}
 
-<p>Back to <a href="{% url 'eventary:users-calendar_details' event.calendar.pk %}" title="Back to {{ event.calendar.title }}">{{ event.calendar.title }}</a></p>
+<p>Back to <a href="{% url 'eventary:users-calendar_details' calendar.pk %}" title="Back to {{ calendar.title }}">{{ calendar.title }}</a></p>
 
 {% endblock %}

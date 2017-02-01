@@ -1,11 +1,26 @@
-from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import FormMixin
-from django.views.generic import TemplateView
+from django.core.urlresolvers import reverse
+from django.views.generic.edit import DeleteView, SingleObjectMixin
+from django.views.generic import TemplateView, View
 from django.shortcuts import get_object_or_404, redirect
 
 from .users import CalendarDetailView, EventCreateView
-from ..forms import EventForm, FilterForm, TimeDateForm, EventGroupingForm
-from ..models import Calendar, Event, EventTimeDate, Group, Secret
+from .admins import LandingView as AdminLandingView
+from .admins import CalendarListView as AdminCalendarListView
+from ..models import Event
+
+
+class CalendarListView(AdminCalendarListView):
+
+    template_name = 'eventary/redactors/list_calendars.html'
+
+
+class EventDeleteView(DeleteView):
+
+    model = Event
+    template_name = 'eventary/redactors/delete_event.html'
+
+    def get_success_url(self):
+        return reverse('eventary:redirector')
 
 
 class EventEditView(EventCreateView):
@@ -42,10 +57,19 @@ class EventEditView(EventCreateView):
             # update the groupings using the form
 
             # redirect the user to the calendar's details
-            return redirect(
-                'eventary:calendar-details',
-                args=[self.object.pk]
-            )
+            if self.event.published:
+                return redirect(
+                    'eventary:users-event_details',
+                    self.object.pk,
+                    self.event.pk
+                )
+            else:
+                return redirect(
+                    'eventary:users-proposal_details',
+                    self.object.pk,
+                    self.event.pk,
+                    str(self.event.secret.secret)
+                )
 
         return super(EventEditView, self).get(request, *args, **kwargs)
 
@@ -68,13 +92,20 @@ class EventEditView(EventCreateView):
         return to_return
 
 
-class LandingView(TemplateView):
+class EventPublishView(SingleObjectMixin, View):
+
+    model = Event
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.published = True
+        self.object.save()
+        return redirect('eventary:redirector')
+
+
+class LandingView(AdminLandingView):
 
     template_name = 'eventary/redactors/landing.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(LandingView, self).get_context_data(**kwargs)
-        return context
 
 
 class ProposalListView(CalendarDetailView):

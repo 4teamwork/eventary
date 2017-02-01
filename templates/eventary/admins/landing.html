@@ -4,7 +4,6 @@
 {% load bootstrap_tags %}
 
 {% block 'extra_head' %}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.js"></script>
 {{ form.media }}
 {% endblock %}
 
@@ -15,11 +14,22 @@
 <h2>Calendars</h2>
 <p>There are {{ calendar_list|length }} calendars with {{ event_count }} published and {{ proposal_count }} proposed events on {{ timedate_count }} dates.</p>
 
-<ul>
-{% for calendar in calendar_list %}
-<li><a href="{% url 'eventary:users-calendar_details' calendar.pk %}" title="{{ calendar.title }}">{{ calendar.title }} - {{ calendar.event_set.count }} events</a></li>
-{% endfor %}
-</ul>
+{% if calendar_list|length %}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Actions</th>
+                <th>Groupings</th>
+                <th># Events</th>
+                <th># Proposals</th>
+            </tr>
+        </thead>
+        {% for calendar in calendar_list %}
+        {% include 'eventary/components/calendar_details_as_row.html' %}
+        {% endfor %}
+    </table>
+{% endif %}
 
 <p>You cannot find the calendar you're looking for? <a
     href="{% url 'eventary:admins-create_calendar' %}"

@@ -1,7 +1,6 @@
 from django.conf.urls import url
 
-from . import views
-from .views import calendars, events, index
+from .views import index
 from .views import admins, redactors, users
 
 app_name = 'eventary'
@@ -17,17 +16,27 @@ urlpatterns = [
 
     # admin views
     url(  # overview of all calendars
-        r'^calendars/$',
+        r'^admins/$',
         admins.LandingView.as_view(),
         name='admins-landing'
     ),
+    url(  # lists all calendars
+        r'^admins/calendars/$',
+        admins.CalendarListView.as_view(),
+        name='admins-list_calendars'
+    ),
     url(  # creates a new calendar
-        r'^calendars/new/$',
+        r'^admins/calendar/new/$',
         admins.CalendarCreateView.as_view(),
         name='admins-create_calendar'
     ),
+    url(
+        r'^admins/cal_(?P<pk>[0-9]+)/delete/$',
+        admins.CalendarDeleteView.as_view(),
+        name='admins-delete_calendar'
+    ),
     url(  # updates a calendar
-        r'^calendars/cal_(?P<pk>[0-9]+)/edit/$',
+        r'^admins/cal_(?P<pk>[0-9]+)/update/$',
         admins.CalendarUpdateView.as_view(),
         name='admins-update_calendar'
     ),
@@ -38,15 +47,30 @@ urlpatterns = [
         redactors.LandingView.as_view(),
         name='redactors-landing'
     ),
+    url(  # list all calendars
+        r'^redactors/calendars/$',
+        redactors.CalendarListView.as_view(),
+        name='redactors-list_calendars'
+    ),
     url(  # lists all proposals
         r'^cal_(?P<pk>[-1-9]+)/proposals/$',
         redactors.ProposalListView.as_view(),
         name='redactors-list_proposals'
     ),
+    url(  # delete an event
+        r'^cal_(?P<calendar_pk>[0-9]+)/evt_(?P<pk>[0-9]+)/delete/$',
+        redactors.EventDeleteView.as_view(),
+        name='redactors-delete_event'
+    ),
     url(  # edits an event
-        r'cal_(?P<pk>[0-9]*)/evt_(?P<event_pk>[0-9]*)/update/$',
-        events.EventEditView.as_view(),
+        r'^cal_(?P<pk>[0-9]+)/evt_(?P<event_pk>[0-9]+)/update/$',
+        redactors.EventEditView.as_view(),
         name='redactors-update_event'
+    ),
+    url(  # approves an event
+        r'^cal_(?P<calendar_pk>[0-9]+)/evt_(?P<pk>[0-9]+)/publish/$',
+        redactors.EventPublishView.as_view(),
+        name='redactors-publish_event'
     ),
 
     # users views
@@ -71,15 +95,15 @@ urlpatterns = [
         name='users-event_details'
     ),
     url(  # detailed view of a proposal
-        r'cal_(?P<cal_pk>[0-9]+)/prop_(?P<pk>[0+-9]+)/(?P<secret>[0-9a-f\-]{36})/$',
+        r'cal_(?P<cal_pk>[0-9]+)/prop_(?P<pk>[0-9]+)/(?P<secret>[0-9a-f\-]{36})/$',
         users.ProposalDetailView.as_view(),
         name='users-proposal_details'
     ),
 
     # views that require porting to class views
     url(
-        r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<event_id>[0-9]*).ics$',
-        views.event_details_ics,
-        name='event_details_ics'
+        r'^cal_(?P<calendar_id>[0-9]*)/event_(?P<pk>[0-9]*).ics$',
+        users.EventICSExportView.as_view(),
+        name='users-export_event_to_ics'
     ),
 ]

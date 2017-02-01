@@ -6,9 +6,10 @@
   <ul class="nav navbar-nav">
     <li class="dropdown">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-        role="button" aria-expanded="false">Manage <span class="caret"></span></a>
+        role="button" aria-expanded="false">Calendars <span class="caret"></span></a>
       <ul class="dropdown-menu" role="menu">
-        <li><a href="#">Users</a></li>
+        <li><a href="{% url 'eventary:admins-list_calendars' %}">List Calendars</a></li>
+        <li><a href="{% url 'eventary:admins-create_calendar' %}">Add Calendar</a></li>
       </ul>
     </li>
   </ul>
