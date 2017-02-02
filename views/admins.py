@@ -98,15 +98,8 @@ class LandingView(TemplateView):
         })
 
         # upcoming events and proposals
-        today = datetime.today()
-        event_list = Event.objects.filter(
-            published=True,
-            eventtimedate__start_date__gte=today,
-        ).distinct()
-        proposal_list = Event.objects.filter(
-            published=False,
-            eventtimedate__start_date__gte=today,
-        ).distinct()
+        event_list = Event.objects.filter(published=True).distinct()
+        proposal_list = Event.objects.filter(published=False).distinct()
 
         # filter the events and proposals
         form = self.get_form()

@@ -3,6 +3,7 @@ import datetime
 from django import forms
 
 from bootstrap3_datetime.widgets import DateTimePicker
+from django_select2.forms import Select2MultipleWidget
 
 from .models import Calendar, Grouping, Group, Event
 
@@ -40,8 +41,8 @@ class GenericFilterForm(forms.Form):
         _fields = {
             grouping.label: forms.MultipleChoiceField(
                 required=False,
-                widget=forms.CheckboxSelectMultiple,
-                choices=_choices[grouping]
+                widget=Select2MultipleWidget,
+                choices=_choices[grouping],
             ) for grouping in _groupings
         }
 
@@ -100,7 +101,7 @@ class FilterForm(forms.Form):
         _fields = {
             grouping.title: forms.MultipleChoiceField(
                 required=False,
-                widget=forms.CheckboxSelectMultiple,
+                widget=Select2MultipleWidget,
                 choices=_choices[grouping]
             ) for grouping in _groupings
         }

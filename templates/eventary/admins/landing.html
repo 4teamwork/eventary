@@ -35,22 +35,61 @@
     href="{% url 'eventary:admins-create_calendar' %}"
     title="Add a new calendar now!">Add a new calendar now!</a></p>
 
-<h2>Upcoming events</h2>
+<h2>Events & proposals</h2>
 
+<form class="form-inline" method="get">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="input-group">
+                    {{ form|as_bootstrap }}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary glyphicon glyphicon-search"></button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<h3>Upcoming events</h3>
 {% if event_list|length %}
     <table class="table table-striped table-hover">
-      <thead>
-      <tr>
-            <th>Date & time</th>
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Actions</th>
             <th>Calendar</th>
-            <th>Proposed event</th>
-      </tr>
-      </thead>
-      <tbody>
-    {% for event in event_list %}
-    	{% include 'eventary/components/event_details_as_row.html' %}
-    {% endfor %}
-      </tbody>
+            <th>Date & time</th>
+            <th>Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in event_list %}
+        <tr>
+            <td>{{ event.title }}</td>
+            <td>
+                <a
+                class="btn btn-default btn-xs"
+                href="{% url 'eventary:users-event_details' event.calendar.pk event.pk %}"
+                role="button"
+                title="View {{ calendar.title }}">
+                    <i class="glyphicon glyphicon-eye-open"></i>
+                </a>
+                <a
+                class="btn btn-default btn-xs"
+                href="{% url 'eventary:redactors-update_event' event.calendar.pk event.pk %}"
+                role="button"
+                title="Update {{ calendar.title }}">
+                    <i class="glyphicon glyphicon-pencil"></i>
+                </a>
+            </td>
+            <td>{{ event.calendar.title }}</td>
+            <td>{{ event|to_full_date }}</td>
+            <td>{{ event.location }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
     </table>
 
     {% if event_list.paginator.num_pages > 1 %}
@@ -73,21 +112,51 @@
     <p>No upcoming events!</p>
 {% endif %}
 
-<h2>Upcoming proposals</h2>
+<h3>Upcoming proposals</h3>
 
 {% if proposal_list|length %}
     <table class="table table-striped table-hover">
-	<thead>
-        <tr>
-            <th>Date & time</th>
-            <th>Calendar</th>
-            <th>Proposed event</th>
-        </tr>
-	</thead>
-	<tbody>
-    {% for event in proposal_list %}
-    	{% include 'eventary/components/event_details_as_row.html' %}
-    {% endfor %}
+        <thead>
+            <tr>
+                <th>Proposed event</th>
+                <th>Actions</th>
+                <th>Calendar</th>
+                <th>Date & time</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in proposal_list %}
+            <tr>
+                <td>{{ event.title }}</td>
+                <td>
+                    <a
+                    class="btn btn-default btn-xs"
+                    href="{% url 'eventary:users-proposal_details' event.calendar.pk event.pk event.secret.secret %}"
+                    role="button"
+                    title="View {{ event.title }}">
+                        <i class="glyphicon glyphicon-eye-open"></i>
+                    </a>
+                    <a
+                    class="btn btn-default btn-xs"
+                    href="{% url 'eventary:redactors-update_event' event.calendar.pk event.pk %}"
+                    role="button"
+                    title="Update {{ event.title }}">
+                        <i class="glyphicon glyphicon-pencil"></i>
+                    </a>
+                    <a
+                    class="btn btn-default btn-xs"
+                    href="{% url 'eventary:redactors-delete_event' event.calendar.pk event.pk %}"
+                    role="button"
+                    title="Delete {{ event.title }}">
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </a>
+                </td>
+                <td>{{ event.calendar.title }}</td>
+                <td>{{ event|to_full_date }}</td>
+                <td>{{ event.location }}</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 
@@ -110,11 +179,5 @@
 {% else %}
     <p>No upcoming proposed events!</p>
 {% endif %}
-
-<h2>Apply a filter</h2>
-<form method="get">
-    {{ form|as_bootstrap }}
-    <input type="submit" value="filter">
-</form>
 
 {% endblock %}
