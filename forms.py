@@ -162,6 +162,19 @@ class CalendarForm(forms.ModelForm):
         fields = ['title']
 
 
+class CalendarImportForm(forms.Form):
+
+    calendar_id = forms.CharField(max_length=255, required=True)
+    from_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=True)
+    to_date = forms.DateField(widget=DateTimePicker(options={
+        "format": "YYYY-MM-DD",
+        "pickTime": False
+    }), required=True)
+
+
 class EventForm(forms.ModelForm):
 
     class Meta:
@@ -178,6 +191,31 @@ class EventEditorialForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['published']
+
+
+class EventsImportForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        items = kwargs.pop('items', None)
+        super(EventsImportForm, self).__init__(*args, **kwargs)
+        if items is not None:
+            self.fields.update({
+                item['id']: forms.BooleanField(
+                    label=item['summary'],
+                    help_text='{0}\n{1} - {2}'.format(
+                        '\n'.join(item['location'].split(',')),
+                        item['start'].get(
+                            'dateTime',
+                            item['start'].get('date')
+                        ),
+                        item['end'].get(
+                            'dateTime',
+                            item['end'].get('date')
+                        )
+                    )
+                )
+                for item in items
+            })
 
 
 class TimeDateForm(forms.Form):

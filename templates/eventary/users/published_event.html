@@ -6,10 +6,9 @@
 {% block 'content' %}
 <h2>{{ event.title }}</h2>
 
-<a href="{% url 'eventary:users-export_event_to_ics' event.calendar.pk event.pk %}" title="{{ event.title }} as calendar entry">
-    Download calendar entry
-    <i class="glyphicon glyphicon-download"></i>
-</a>
+<div>
+    {{ event|actions:request.user }}
+</div>
 
 {% if event.image %}
     <img src="{% static event.image.url %}" title="" alt="" />
@@ -25,19 +24,6 @@
 {% if event.document %}
 <h3>Downloads</h3>
 <div><a href="{% static event.document.url %}" title="">Download info sheet</a></div>
-{% endif %}
-
-{% if not request.user.is_anonymous %}
-<h2>Actions</h2>
-<table class="table">
-    <tr>
-        <td>
-            <a href="{% url 'eventary:redactors-update_event' event.calendar.pk event.pk %}" title="Update '{{ event.title }}'">
-                Update '{{ event.title }}' <i class="glyphicon glyphicon-pencil"></i>
-            </a>
-        </td>
-    </tr>
-</table>
 {% endif %}
 
 <p>Back to <a href="{% url 'eventary:users-calendar_details' event.calendar.pk %}" title="Back to {{ event.calendar.title }}">{{ event.calendar.title }}</a></p>

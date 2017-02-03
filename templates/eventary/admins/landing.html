@@ -25,9 +25,23 @@
                 <th># Proposals</th>
             </tr>
         </thead>
+        <tbody>
         {% for calendar in calendar_list %}
-        {% include 'eventary/components/calendar_details_as_row.html' %}
+            <tr>
+                <td>
+                    <a
+                    href="{% url 'eventary:users-calendar_details' calendar.pk %}"
+                    title="View {{ calendar.title }}">
+                        {{ calendar.title }}
+                    </a>
+                </td>
+                <td>{{ calendar|actions:request.user }}</td>
+                <td>{{ calendar.grouping_set.all|join:", " }}</td>
+                <td>{{ calendar.num_events }}</td>
+                <td>{{ calendar.num_proposals }}</td>
+            </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endif %}
 
@@ -67,23 +81,14 @@
     <tbody>
         {% for event in event_list %}
         <tr>
-            <td>{{ event.title }}</td>
             <td>
                 <a
-                class="btn btn-default btn-xs"
                 href="{% url 'eventary:users-event_details' event.calendar.pk event.pk %}"
-                role="button"
-                title="View {{ calendar.title }}">
-                    <i class="glyphicon glyphicon-eye-open"></i>
-                </a>
-                <a
-                class="btn btn-default btn-xs"
-                href="{% url 'eventary:redactors-update_event' event.calendar.pk event.pk %}"
-                role="button"
-                title="Update {{ calendar.title }}">
-                    <i class="glyphicon glyphicon-pencil"></i>
+                title="View {{ event.title }}">
+                    {{ event.title }}
                 </a>
             </td>
+            <td>{{ event|actions:request.user }}</td>
             <td>{{ event.calendar.title }}</td>
             <td>{{ event|to_full_date }}</td>
             <td>{{ event.location }}</td>
@@ -107,7 +112,6 @@
         {% endif %}
     </div>
     {% endif %}
-
 {% else %}
     <p>No upcoming events!</p>
 {% endif %}
@@ -128,30 +132,14 @@
         <tbody>
         {% for event in proposal_list %}
             <tr>
-                <td>{{ event.title }}</td>
                 <td>
                     <a
-                    class="btn btn-default btn-xs"
                     href="{% url 'eventary:users-proposal_details' event.calendar.pk event.pk event.secret.secret %}"
-                    role="button"
                     title="View {{ event.title }}">
-                        <i class="glyphicon glyphicon-eye-open"></i>
-                    </a>
-                    <a
-                    class="btn btn-default btn-xs"
-                    href="{% url 'eventary:redactors-update_event' event.calendar.pk event.pk %}"
-                    role="button"
-                    title="Update {{ event.title }}">
-                        <i class="glyphicon glyphicon-pencil"></i>
-                    </a>
-                    <a
-                    class="btn btn-default btn-xs"
-                    href="{% url 'eventary:redactors-delete_event' event.calendar.pk event.pk %}"
-                    role="button"
-                    title="Delete {{ event.title }}">
-                        <i class="glyphicon glyphicon-trash"></i>
+                        {{ event.title }}
                     </a>
                 </td>
+                <td>{{ event|actions:request.user }}</td>
                 <td>{{ event.calendar.title }}</td>
                 <td>{{ event|to_full_date }}</td>
                 <td>{{ event.location }}</td>
@@ -175,7 +163,6 @@
         {% endif %}
     </div>
     {% endif %}
-
 {% else %}
     <p>No upcoming proposed events!</p>
 {% endif %}

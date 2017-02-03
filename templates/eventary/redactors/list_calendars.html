@@ -19,11 +19,13 @@
         <tbody>
         {% for calendar in object_list %}
             <tr>
-                <td><a
-                    href="{% url 'eventary:redactors-list_proposals' calendar.pk %}"
-                    title="{{ calendar.title }}">
+                <td>
+                    <a
+                    href="{% url 'eventary:users-calendar_details' calendar.pk %}"
+                    title="View {{ calendar.title }}">
                         {{ calendar.title }}
-                </a></td>
+                    </a>
+                </td>
                 <td>{{ calendar.grouping_set.all|join:", " }}</td>
                 <td>{{ calendar.num_events }}</td>
                 <td>{{ calendar.num_proposals }}</td>

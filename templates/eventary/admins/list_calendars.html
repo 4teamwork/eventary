@@ -17,9 +17,23 @@
                 <th># Proposals</th>
             </tr>
         </thead>
+        <tbody>
         {% for calendar in object_list %}
-        {% include 'eventary/components/calendar_details_as_row.html' %}
+            <tr>
+                <td>
+                    <a
+                    href="{% url 'eventary:users-calendar_details' calendar.pk %}"
+                    title="View {{ calendar.title }}">
+                        {{ calendar.title }}
+                    </a>
+                </td>
+                <td>{{ calendar|actions:request.user }}</td>
+                <td>{{ calendar.grouping_set.all|join:", " }}</td>
+                <td>{{ calendar.num_events }}</td>
+                <td>{{ calendar.num_proposals }}</td>
+            </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endif %}
 

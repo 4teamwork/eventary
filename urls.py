@@ -52,6 +52,11 @@ urlpatterns = [
         redactors.CalendarListView.as_view(),
         name='redactors-list_calendars'
     ),
+    url(  # import a calendar
+        r'^redactors/calendars/import/',
+        redactors.CalendarImportView.as_view(),
+        name='redactors-import_calendar'
+    ),
     url(  # lists all proposals
         r'^cal_(?P<pk>[-1-9]+)/proposals/$',
         redactors.ProposalListView.as_view(),

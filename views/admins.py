@@ -72,18 +72,25 @@ class LandingView(TemplateView):
     def filter_qs(self, qs):
 
         if self.form.is_valid():
+
             data = self.form.clean()
-            if data['from_date'] is not None:
+
+            # filter the queryset with the given date range / date
+            if data['from_date'] is not None and data['to_date'] is not None:
                 qs = qs.exclude(
-                    eventtimedate__start_date__lt=data['from_date']
+                    eventtimedate__start_date__gte=data['to_date'],
+                    eventtimedate__end_date__lte=data['from_date']
                 )
-            if data['to_date'] is not None:
-                qs = qs.exclude(
-                    eventtimedate__start_date__gt=data['to_date']
-                )
+            elif data['to_date'] is not None:
+                qs = qs.exclude(eventtimedate__start_date__gte=data['to_date'])
+            elif data['from_date'] is not None:
+                qs = qs.exclude(eventtimedate__end_date__gt=data['from_date'])
+
+            # filter the queryset by the selected groups
             groups = self.form.groups()
             if len(groups) > 0:
                 qs = qs.filter(group__in=groups)
+
         return qs
 
     def get_context_data(self, **kwargs):
