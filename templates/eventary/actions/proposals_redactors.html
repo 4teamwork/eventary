@@ -7,6 +7,13 @@ title="Update {{ event.title }}">
 </a>
 <a
 class="btn btn-default btn-xs"
+href="{% url 'eventary:redactors-publish_event' event.calendar.pk event.pk %}"
+role="button"
+title="Publish {{ event.title }}">
+    <i class="glyphicon glyphicon-ok"></i>
+</a>
+<a
+class="btn btn-default btn-xs"
 href="{% url 'eventary:redactors-delete_event' event.calendar.pk event.pk %}"
 role="button"
 title="Delete {{ event.title }}">
