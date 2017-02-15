@@ -12,6 +12,7 @@ class Calendar(models.Model):
     # are related enabling event discrimination by calendar
     title = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from='title')
+    view_limit = models.IntegerField()
 
     def __str__(self):
         return self.title
