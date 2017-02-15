@@ -1,67 +1,12 @@
-import requests
-
 from django.core.urlresolvers import reverse
 from django.views.generic.edit import DeleteView, SingleObjectMixin
-from django.views.generic import TemplateView, View
+from django.views.generic import View
 from django.shortcuts import get_object_or_404, redirect
 
 from .users import CalendarDetailView, EventCreateView
 from .admins import LandingView as AdminLandingView
 from .admins import CalendarListView as AdminCalendarListView
-from ..forms import CalendarImportForm, EventsImportForm
 from ..models import Event
-
-
-class CalendarImportView(TemplateView):
-
-    template_name = 'eventary/redactors/import_calendar.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(CalendarImportView, self).get_context_data(**kwargs)
-
-        if len(self.request.GET):
-            calendarimportform = CalendarImportForm(self.request.GET)
-        else:
-            calendarimportform = CalendarImportForm()
-
-        if calendarimportform.is_valid():
-            # prepare some google calendar api data
-            google_api_data = calendarimportform.clean()
-            google_api_url = 'https://www.googleapis.com/calendar/v3'
-            google_api_key = 'AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs'
-            date_format = '%Y-%m-%d'
-
-            # get the events for the given calendar and time period
-            google_cal = requests.get(
-                '{0}/calendars/{1}/events'.format(
-                    google_api_url,
-                    google_api_data.get('calendar_id')
-                ),
-                params={
-                    'timeMin': '{0}T00:00:00+01:00'.format(
-                        google_api_data.get('from_date').strftime(date_format)
-                    ),
-                    'timeMax': '{0}T00:00:00+01:00'.format(
-                        google_api_data.get('to_date').strftime(date_format)
-                    ),
-                    'key': google_api_key
-                }
-            ).json()
-
-            # add the response to the context
-            context.update({
-                'google_cal': {
-                    key: google_cal[key]
-                    for key in ['summary', 'description']
-                },
-                'otherform': EventsImportForm(items=google_cal['items'])
-            })
-
-        context.update({
-            'calendarimportform': calendarimportform
-        })
-
-        return context
 
 
 class CalendarListView(AdminCalendarListView):
