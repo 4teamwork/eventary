@@ -1,8 +1,16 @@
-Django
-django-bootstrap-themes
-django-forms-bootstrap
-django-autoslug
-django-jquery
-django-bootstrap3-datetimepicker  # install from git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.gi
-django-bootstrap3
-
+Django==1.10.5
+django-appconf==1.0.2
+django-autoslug==1.9.3
+django-bootstrap-themes==3.3.6
+django-bootstrap3==8.0.0
+git+https://github.com/nkunihik[…]ec10aa3288a989a17a4332bcb97
+git+https://github.com/pinax/dj[…]ae1a1c2f1933b8329f3391cc899
+django-jquery==3.1.0
+django-searchable-select==1.4.3.post1
+Django-Select2==5.8.10
+olefile==0.44
+Pillow==4.0.0
+psycopg2==2.6.2
+python-slugify==1.2.1
+requests==2.13.0
+Unidecode==0.4.20
